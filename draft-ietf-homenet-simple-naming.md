@@ -1,6 +1,6 @@
-﻿---
+---
 ipr: trust200902
-docname: draft-ietf-homenet-simple-naming-02
+docname: draft-ietf-homenet-simple-naming-latest
 cat: info
 obsoletes: ''
 updates: ''
