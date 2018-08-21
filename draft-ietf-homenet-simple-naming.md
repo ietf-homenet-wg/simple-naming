@@ -1,7 +1,7 @@
 ﻿---
 stand_alone: true
 ipr: trust200902
-docname: draft-ietf-homenet-simple-naming-03
+docname: draft-ietf-homenet-simple-naming-latest
 cat: info
 obsoletes: ''
 updates: ''
