@@ -1,7 +1,6 @@
 ﻿---
-stand_alone: true
 ipr: trust200902
-docname: draft-ietf-homenet-simple-naming-latest
+docname: draft-ietf-homenet-simple-naming-02
 cat: info
 obsoletes: ''
 updates: ''
@@ -66,6 +65,8 @@ normative:
 --- abstract
 
 
+
+
 This document describes how names are published and resolved on
 homenets, and how hosts are configured to use these names to discover
 services on homenets. It presents the complete architecture, and
@@ -78,6 +79,7 @@ low-cost homenet routers.
 
 # Introduction
 
+
 This document is a homenet architecture document. The term 'homenet'
 refers to a set of technologies that allow home network users to have
 a local-area network (LAN) with more than one physical link and,
@@ -88,6 +90,7 @@ and service discovery within the home with no operator intervention.
 This document describes the aspect of homenet automatic configuration
 that has to do with service discovery and name resolution.
 
+
 The homenet naming architecture consists of two parts: the simple
 naming architecture, and the advanced naming architecture. The
 advanced architecture provides approximate parity of features with a
@@ -96,6 +99,7 @@ internet. The simple architecture provides a minimal set of features
 required to enable seamless service discovery on a multi-link home
 network, but does not attempt to provide feature parity with a managed
 LAN.
+
 
 This document begins by presenting a motivational list of requirements
 and considerations, which should give the reader a clear idea of the
@@ -106,46 +110,66 @@ requirements are not satisfied by the simple architecture; these are
 discussed in this document, but explained in more detail in the
 Advanced Homenet Naming Architecture document, which is to follow.
 
+
+
+
 # Requirements
+
 
 Name service on a local area network (LAN) requires the following:
 
+
 * Name: a forward domain under which information about local services will
   be published
+
 
 * Authority: a name server that is authoritative for at least one
   forward domain and one or two reverse domains that are applicable to
   that network and is capable of signing and publishing the zones
   using DNSSEC
 
+
 * Resolution: a full-service caching DNS resolver that fully supports EDNS(0)
   and queries with the DO bit set
 
+
 * Publication: a mechanism that
+
 
   * allows services on the LAN to publish information about the services they
     provide
 
+
   * allows services to publish information on how to reach them
+
 
   * manages the lifetime of such information, so that it persists long
     enough to prevent spoofing, but protects end users from seeing
     stale information
 
 
+
+
 * Host configuration: one or more automatic mechanisms (e.g. DHCP or RA) that
   provide:
 
+
   * caching resolver information to hosts on the LAN
 
+
   * information about how services on the LAN can publish information
+
+
 
 
 * Trust: some basis for trusting the information that is provided by
   the service discovery system
 
 
+
+
 ## Managed LAN versus Homenet
+
 
 A managed network is one that has a (human) manager, or operator.  The
 operator has authority over the network, and the authority to publish
@@ -154,12 +178,14 @@ The operator has the authority to sign the respective trees with
 DNSSEC, and acquire TLS certificates for hosts/servers within the
 network.
 
+
 On a managed LAN, many of these services can be provided by
 operators. When a new printer is added to the network, it can be added
 to the service discovery system (the authoritative server)
 manually. When a printer is taken out of service, it can be
 removed. In this scenario, the role of "publisher" is filled by the
 network operator.
+
 
 In many managed LANs, establishment of trust for service discovery is
 simply on the basis of a belief that the local resolver will give a
@@ -168,6 +194,7 @@ may be some security (e.g., TLS) that protects the connection to the
 service, but the trust model is often just "you're connected to a
 network you trust, so you can trust the printer that you discovered on
 this network."
+
 
 A homenet does not have an operator, so functions that would normally
 be performed by the operator have to happen automatically. This has
@@ -179,24 +206,34 @@ can configure the network so that multihoming is handled seamlessly,
 in a homenet, multihoming must be handled using multiple provisioning
 domains [RFC7556].
 
+
+
+
 ## Homenet-specific considerations
+
 
 A naming architecture for homenets therefore adds the following considerations:
 
+
 * All of the operations mentioned here must reliably function automatically,
   without any user intervention or debugging.
+
 
 * Because user intervention cannot be required, naming conflicts must
   be resolved automatically, and, to the extent possible,
   transparently.
 
+
 * Devices that provide services must be able to publish those services
   on the homenet, and those services must be available from any part
   of the homenet, not just the link to which the device is attached.
 
+
 * Homenets must address the problem of multiple provisioning domains,
   in the sense that the DNS may give a different answer depending on
   whether caching resolvers at one ISP or another are queried.
+
+
 
 
 An additional requirement from the Homenet Architecture {{RFC7556}} is
@@ -206,24 +243,39 @@ homenet. This architecture may define optional homenet-specific
 features, but hosts that do not implement these features must work on
 homenets.
 
+
+
+
+
+
 # Terminology
+
 
 This document uses the following terms and abbreviations:
 
+
 HNR
 : Homenet Router
+
+
 
 
 SHNR
 : Homenet Router implementing simple homenet naming architecture
 
 
+
+
 AHNR
 : Homenet Router implementing advanced homenet naming architecture
 
 
+
+
 ISP
 : Internet Service Provider
+
+
 
 
 Forward Mapping
@@ -231,11 +283,18 @@ Forward Mapping
   about that host or service.
 
 
+
+
 Reverse Mapping
 : A mapping between an IP address and the host that has that IP address.
 
 
+
+
+
+
 # Name
+
 
 In order for names to be published on a homenet, it is necessary that
 there be a set of domain names under which such names are
@@ -248,10 +307,12 @@ all homenets, it has no global meaning, and names published under the
 domain 'home.arpa' cannot be used outside of the homenet on which they
 are published.
 
+
 Homenet routers that implement advanced homenet naming may also be
 configured with a global domain. How such a domain is configured is
 out of scope for this document, and is described in the Advanced
 Homenet Naming Architecture document [advanced].
+
 
 In addition to the name, which defaults to 'home.arpa.', names are
 needed for reverse lookups. These names are dependent on the IP
@@ -263,6 +324,7 @@ local IP addresses out of net 10 {{RFC1918}}, a domain,
 '10.in-addr.arpa' is a locally-served zone, and has no validity
 outside of the homenet.
 
+
 If the homenet is addressed with IPv6, it is expected to have a unique
 local address prefix; subsets of this prefix will be advertised on
 every link on the homenet. Every service on the homenet that supports
@@ -272,7 +334,11 @@ zone to be populated other than the ULA zone.  So for example if the
 homenet's ULA prefix is fd00:2001:db8::/48, then the reverse domain
 name for the homenet would end in '8.b.d.0.1.0.0.2.0.0.d.f.ip6.arpa'.
 
+
+
+
 # Authority
+
 
 The authority role is provided by a name server that is authoritative
 for each of the local domains. SHNRs provide authoritative service for
@@ -283,6 +349,7 @@ SHNRs, each SHNR individually provides authoritative service for the
 whole homenet by using Discovery relays to discover services off the
 local link.
 
+
 The Discovery Proxy model relies on each link having its own
 name. However, homenets do not actually have a way to name local links
 that will make any sense to the end user.  Consequently, this
@@ -292,11 +359,13 @@ discovery broker will be configured so that a single query for a
 particular service will be successful in providing the information
 required to access that service, regardless of the link it is on.
 
+
 Artificial link names will be generated using HNCP.  These should only
 be visible to the user in graphical user interfaces in the event that
 the same name is claimed by a service on two links.  Services that are
 expected to be accessed by users who type in names should use
 {{I-D.sctl-service-registration}} if it is available.
+
 
 It is possible that local services may offer services available on IP addresses
 in public as well as ULA prefixes.
@@ -304,13 +373,18 @@ Homenet hybrid proxies MUST filter out global IP addresses, providing
 only ULA addresses, similar to the process described in section 5.5.2
 of {{I-D.ietf-dnssd-hybrid}}.
 
+
 This filtering applies to queries within the homenet; it is
 appropriate for non-ULA addresses to be used for offering services,
 because in some cases end users may want such services to be reachable
 outside of the homenet.  Configuring this is however out of scope for
 this document.
 
+
+
+
 # Resolution
+
 
 Name resolution is provided by a local DNS cache or proxy on the
 homenet, henceforth the "local resolver."  All host queries are sent
@@ -323,9 +397,14 @@ Queries for all other names are resolved either by forwarding them to
 an ISP-provided full service resolver, or by providing the full
 service resolver function locally.
 
+
+
+
 # Publication
 
+
 ## DNS Service Discovery Registration Protocol
+
 
 The DNSSD Service Registration protocol
 {{I-D.sctl-service-registration}} requires that DNS updates be
@@ -334,12 +413,14 @@ ensure that such registrations are actually received on local links in
 the homenet, updates are sent to the local relay proxy
 ({{I-D.sctl-dnssd-mdns-relay}}) (XXX how?).
 
+
 The relay proxy encapsulates the update and sends it to whatever
 Discovery Proxy is listening on the link; the Discovery proxy then
 either consumes the update directly, or forwards it to the
 authoritative resolver for the local service discovery zone.  If the
 registration protocol is not supported on the homenet, the Discovery
 Proxy rejects the update with a ??? RCODE.
+
 
 Homenets are not required to support Service Registration.  Service
 registration requires a stateful authoritative DNS server; this may be
@@ -352,7 +433,11 @@ cache to allow those routers to take over service, using Discovery
 Relays to service links that are connected using Homenet routers with
 more limited functionality.
 
+
+
+
 ## Configuring Service Discovery
+
 
 Clients discovering services using [DNS-SD](#RFC6763) follow a
 two-step process.  The first step is for the client device to
@@ -361,29 +446,32 @@ second step is for the client device to then seek desired service(s)
 in those domain(s).  For an example of the second step, given the
 desired service type "IPP Printing", and the domains "local" and
 "meeting.ietf.org", the client device forms the queries
-"\_ipp.\_tcp.local. PTR ?" (resolved using Multicast DNS) and
-"\_ipp.\_tcp.meeting.ietf.org PTR. ?" (resolved using Unicast DNS) and
+"_ipp._tcp.local. PTR ?" (resolved using Multicast DNS) and
+"_ipp._tcp.meeting.ietf.org PTR. ?" (resolved using Unicast DNS) and
 then presents the combined list of results to the user.
+
 
 The first step, determining in which domain(s) to attempt to discover
 services, is performed in a variety of ways, as described in Section
 11 of the [DNS-Based Service Discovery specification](#RFC6763).
 
+
 The domain "local" is generally always in the set of domains in which
 the client devices attempt to discover services, and other domains for
 service discovery may be configured manually by the user.
+
 
 The device also learns additional domains automatically from its
 network environment.  For this automatic configuration discovery,
 special DNS queries are formulated.  To learn additional domain(s) in
 which to attempt to discover services, the query string
-"lb.\_dns\_sd.\_udp" is prepended onto three different kinds of
+"lb._dns_sd._udp" is prepended onto three different kinds of
 "bootstrap domain" to form DNS queries that allow the device to learn
 the configuration information.
 
 
 One of these bootstrap domains is the fixed string "local".  The
-device issues the query "lb.\_dns\_sd.\_udp.local. PTR ?" (resolved using
+device issues the query "lb._dns_sd._udp.local. PTR ?" (resolved using
 Multicast DNS), and if any answers are received, then they are added
 to the set of domains in which the client devices attempt to discover
 services.
@@ -393,7 +481,7 @@ Another kind of these bootstrap domains is name-based, derived from
 the [DHCPv4 "domain name" option (code 15)](#RFC2132) (for IPv4) or
 the [DNS Search List (DNSSL) Router Advertisement option](#RFC8106)
 (for IPv6).  If a domain in the DNSSL is "example.com", then the
-device issues the query "lb.\_dns\_sd.\_udp.example.com. PTR ?" (resolved
+device issues the query "lb._dns_sd._udp.example.com. PTR ?" (resolved
 using Unicast DNS), and if any answers are received, then they are
 likewise added to the set of domains in which the client devices
 attempt to discover services.
@@ -402,7 +490,7 @@ attempt to discover services.
 Finally, the third kind of bootstrap domain is address-based, derived
 from the device's IP address(es) themselves.  If the device has IP
 address 192.168.1.100/24, then the device issues the query
-"lb.\_dns\_sd.\_udp.0.1.168.192.in-addr.arpa. PTR ?" (resolved using
+"lb._dns_sd._udp.0.1.168.192.in-addr.arpa. PTR ?" (resolved using
 Unicast DNS), and if any answers are received, then they are also
 added to the set of domains in which the client devices attempt to
 discover services.
@@ -410,18 +498,19 @@ discover services.
 
 Since there is an HNR on every link of a homenet, automatic
 configuration could be performed by having HNRs answer the
-"lb.\_dns\_sd.\_udp.local. PTR ?" (Multicast DNS) queries.  However,
+"lb._dns_sd._udp.local. PTR ?" (Multicast DNS) queries.  However,
 because multicast is slow and unreliable on many modern network
 technologies like Wi-Fi, we prefer to avoid using it.  Instead we
 require that a homenet be configured to answer the name-based
 bootstrap queries.  By default the domain in the DNSSL communicated to
 the client devices will be "home.arpa", and the homenet will be
 configured to correctly answer queries such as
-"lb.\_dns\_sd.\_udp.example.com. PTR ?", though client devices must not
+"lb._dns_sd._udp.example.com. PTR ?", though client devices must not
 assume that the name will always be "home.arpa". A client could be
 configured with any valid DNSSL, and should construct the appropriate
 bootstrap queries derived from the name(s) in their configured DNS
 Search List.
+
 
 HNRs will answer domain enumeration queries against every IPv4 address
 prefix advertised on a homenet link, and every IPv6 address prefix
@@ -432,11 +521,11 @@ paragraph.
 
 
 Homenets advertise the availability of several browsing zones in the
-"b.\_dns\_sd.\_udp.\<domain>" subdomain.  By default, the 'home.arpa'
+"b._dns_sd._udp.\<domain>" subdomain.  By default, the 'home.arpa'
 domain is advertised.  Similarly, 'home.arpa' is advertised as the
 default browsing and service registration domain under
-"db.\_dns\_sd.\_udp.\<domain>", "r.\_dns\_sd.\_udp.\<domain>",
-"dr.\_dns\_sd.\_udp.\<domain>" and "lb.\_dns\_sd.\_udp.\<domain>".
+"db._dns_sd._udp.\<domain>", "r._dns_sd._udp.\<domain>",
+"dr._dns_sd._udp.\<domain>" and "lb._dns_sd._udp.\<domain>".
 
 
 In order for this discovery process to work, the homenet must provide
