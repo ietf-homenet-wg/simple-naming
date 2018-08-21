@@ -779,4 +779,4 @@ guess on which link a given service may appear.
 
 At present, the approach we intend to take with respect to
 disambiguation is that this will not be solved at a protocol level for
-devices that do not implement the registration protocol.
+devices that do not implement the registration protocol. 
