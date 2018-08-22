@@ -2,9 +2,9 @@
 
 This is the working area for the IETF [HOMENET Working Group](https://datatracker.ietf.org/wg/homenet/documents/) Internet-Draft, "Simple Homenet Naming and Service Discovery Architecture".
 
-* [Editor's Copy](https://ietf-homenet-wg.github.io/simple-naming/#go.draft-ietf-homenet-simple-naming.html)
+* [Editor's Copy](https://ietf-homenet-wg.github.io/simple-naming/draft-ietf-homenet-simple-naming.html)
 * [Working Group Draft](https://tools.ietf.org/html/draft-ietf-homenet-simple-naming)
-* [Compare Editor's Copy to Working Group Draft](https://ietf-homenet-wg.github.io/simple-naming/#go.draft-ietf-homenet-simple-naming.diff)
+* [Compare Editor's Copy to Working Group Draft](https://tools.ietf.org//rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-homenet-simple-naming-02.txt&url2=https://ietf-homenet-wg.github.io/simple-naming/draft-ietf-homenet-simple-naming.txt)
 
 ## Building the Draft
 
