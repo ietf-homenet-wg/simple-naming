@@ -1,0 +1,756 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head profile="http://www.w3.org/2006/03/hcard http://dublincore.org/documents/2008/08/04/dc-html/">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+
+  <title>Simple Homenet Naming and Service Discovery Architecture</title>
+
+  
+<style type="text/css">/*<![CDATA[*/
+
+body {
+  font: 16px "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
+  color: #333;
+  font-size-adjust: 0.5;
+  line-height: 24px;
+  margin: 75px auto;
+  max-width: 624px;
+  padding: 0 5px;
+}
+
+.title, .filename, h1, h2, h3, h4, h5 {
+  font: 16px "Roboto Condensed","Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
+  font-size-adjust: 0.5;
+  font-weight: bold;
+  color: #333;
+  line-height: 100%;
+  margin: 1.2em 0 0.3em;
+}
+.title, #rfc\.title h1 { font-size: 32px; }
+h1, section h1, h2, section h2, section h3, nav h2 { font-size: 20px; }
+h3, section h4, h4, section h5 { font-size: 16px; }
+h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
+  color: #333;
+}
+
+table {
+  margin-left: 0em;
+  border-collapse: collapse;
+}
+th {
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+  vertical-align: top;
+}
+tr:nth-child(2n+1) > td,
+tr:nth-child(2n+1) > th {
+  background-color: #f9f9f9;
+}
+td.reference {
+  max-width: 200px;
+  border-top: none;
+  padding-right: 1em;
+}
+.right {
+  text-align: right;
+}
+
+
+table.header, table#rfc\.headerblock {
+  width: 100%;
+}
+table.header td, table#rfc\.headerblock td {
+  border: none;
+  background-color: transparent;
+  color: black;
+  padding: 0;
+}
+.filename {
+  display: block;
+  color: rgb(119, 119, 119);
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 100%;
+  margin: 10px 0 32px;
+}
+#rfc\.abstract+p, #rfc\.abstract p {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+samp, tt, code, pre {
+  font: 15px Consolas, monospace;
+  font-size-adjust: none;
+}
+pre {
+  background-color: #eee;
+  border: 1px solid #ddd;
+  overflow-x: auto;
+  padding: 5px;
+  margin: 5px;
+}
+.figure, caption {
+  font-style: italic;
+  margin: 0 1.5em;
+  text-align: left;
+}
+
+address {
+  margin: 16px 2px;
+  line-height: 20px;
+}
+.vcard {
+  font-style: normal;
+}
+.vcardline {
+  display: block;
+}
+.vcardline .fn, address b {
+  font-weight: normal;
+}
+.vcardline .hidden {
+  display: none;
+}
+
+dl {
+  margin-left: 1em;
+}
+dl.dl-horizontal: {
+  margin-left: 0;
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.nohang > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .5em;
+}
+dl.compact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+ul.empty {
+  list-style-type: none;
+}
+ul.empty li {
+  margin-top: .5em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+hr.noprint {
+  display: none;
+}
+
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #2a6496;
+}
+a[href]:hover {
+  background-color: #eee;
+}
+
+p, ol, ul, li {
+  padding: 0;
+}
+p {
+  margin: 0.5em 0;
+}
+ol, ul {
+  margin: 0.2em 0 0.2em 2em;
+}
+li {
+  margin: 0.2em 0;
+}
+address {
+  font-style: normal;
+}
+
+ul.toc ul {
+  margin: 0 0 0 2em;
+}
+ul.toc li {
+  list-style: none;
+  margin: 0;
+}
+
+@media screen and (min-width: 924px) {
+  body {
+    padding-right: 350px;
+  }
+  body>ul.toc, body>#rfc\.toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 500px);
+    width: 300px;
+    z-index: 1;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  body>#rfc\.toc {
+    top: 55px;
+  }
+  body>ul.toc {
+    top: 100px;
+  }
+
+  ul.toc {
+    margin: 0 0 0 4px;
+    font-size: 12px;
+    line-height: 20px;
+  }
+  ul.toc ul {
+    margin-left: 1.2em;
+  }
+}
+
+.github-fork-ribbon-wrapper {
+  display: none;
+}
+@media screen and (min-width: 800px) {
+  /* "Fork me on GitHub" CSS ribbon based on
+   * https://github.com/simonwhitaker/github-fork-ribbon-css
+   */
+  .github-fork-ribbon {
+    position: absolute;
+    padding: 2px 0;
+    background-color: #a00;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);
+    font: 700 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    pointer-events: auto;
+
+    top: 38px;
+    right: -45px;
+
+    transform: rotate(45deg);
+  }
+
+  .github-fork-ribbon a[href],
+  .github-fork-ribbon a[href]:hover {
+    color: #fff;
+    background-color: transparent;
+    text-decoration: none;
+    text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
+    text-align: center;
+
+    width: 190px;
+    line-height: 18px;
+
+    display: inline-block;
+    padding: 2px 0;
+
+    border: 1.5px dotted #fff;
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+
+  .github-fork-ribbon-wrapper {
+    display: block;
+    width: 130px;
+    height: 130px;
+    position: absolute;
+    overflow: hidden;
+    top: 0; right: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .github-fork-ribbon-wrapper {
+    position: fixed;
+  }
+  /*]]>*/</style>
+  <meta name="viewport" content="initial-scale=1.0">
+
+
+  <link href="#rfc.toc" rel="Contents">
+<link href="#rfc.section.1" rel="Chapter" title="1 Introduction">
+<link href="#rfc.section.2" rel="Chapter" title="2 Requirements">
+<link href="#rfc.section.2.1" rel="Chapter" title="2.1 Managed LAN versus Homenet">
+<link href="#rfc.section.2.2" rel="Chapter" title="2.2 Homenet-specific considerations">
+<link href="#rfc.section.3" rel="Chapter" title="3 Terminology">
+<link href="#rfc.section.4" rel="Chapter" title="4 Name">
+<link href="#rfc.section.5" rel="Chapter" title="5 Authority">
+<link href="#rfc.section.6" rel="Chapter" title="6 Resolution">
+<link href="#rfc.section.7" rel="Chapter" title="7 Publication">
+<link href="#rfc.section.7.1" rel="Chapter" title="7.1 DNS Service Discovery Registration Protocol">
+<link href="#rfc.section.7.2" rel="Chapter" title="7.2 Configuring Service Discovery">
+<link href="#rfc.section.8" rel="Chapter" title="8 Host Configurtion">
+<link href="#rfc.section.9" rel="Chapter" title="9 Globally Unique Name">
+<link href="#rfc.section.10" rel="Chapter" title="10 DNSSEC Validation">
+<link href="#rfc.section.11" rel="Chapter" title="11 Support for Multiple Provisioning Domains">
+<link href="#rfc.section.12" rel="Chapter" title="12 Using the Local Namespace While Away From Home">
+<link href="#rfc.section.13" rel="Chapter" title="13 Management Considerations">
+<link href="#rfc.section.14" rel="Chapter" title="14 Privacy Considerations">
+<link href="#rfc.section.15" rel="Chapter" title="15 Security Considerations">
+<link href="#rfc.section.16" rel="Chapter" title="16 IANA considerations">
+<link href="#rfc.references" rel="Chapter" title="17 Normative References">
+<link href="#rfc.appendix.A" rel="Chapter" title="A Existing solutions">
+<link href="#rfc.authors" rel="Chapter">
+
+
+  <meta name="generator" content="xml2rfc version 2.10.0 - https://tools.ietf.org/tools/xml2rfc" />
+  <link rel="schema.dct" href="http://purl.org/dc/terms/" />
+
+  <meta name="dct.creator" content="Lemon, T., Migault, D., and S. Cheshire" />
+  <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-homenet-simple-naming-latest" />
+  <meta name="dct.issued" scheme="ISO8601" content="2018-07-02" />
+  <meta name="dct.abstract" content="This document describes how names are published and resolved on homenets, and how hosts are configured to use these names to discover services on homenets. It presents the complete architecture, and describes a simple subset of that architecture that can be used in low-cost homenet routers." />
+  <meta name="description" content="This document describes how names are published and resolved on homenets, and how hosts are configured to use these names to discover services on homenets. It presents the complete architecture, and describes a simple subset of that architecture that can be used in low-cost homenet routers." />
+
+</head>
+
+<body>
+
+  <table class="header">
+    <tbody>
+    
+    	<tr>
+<td class="left">Network Working Group</td>
+<td class="right">T. Lemon</td>
+</tr>
+<tr>
+<td class="left">Internet-Draft</td>
+<td class="right">Nibbhaya Consulting</td>
+</tr>
+<tr>
+<td class="left">Intended status: Informational</td>
+<td class="right">D. Migault</td>
+</tr>
+<tr>
+<td class="left">Expires: January 3, 2019</td>
+<td class="right">Ericsson</td>
+</tr>
+<tr>
+<td class="left"></td>
+<td class="right">S. Cheshire</td>
+</tr>
+<tr>
+<td class="left"></td>
+<td class="right">Apple Inc.</td>
+</tr>
+<tr>
+<td class="left"></td>
+<td class="right">July 02, 2018</td>
+</tr>
+
+    	
+    </tbody>
+  </table>
+
+  <p class="title">Simple Homenet Naming and Service Discovery Architecture<br />
+  <span class="filename">draft-ietf-homenet-simple-naming-latest</span></p>
+  
+  <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
+<p>This document describes how names are published and resolved on homenets, and how hosts are configured to use these names to discover services on homenets. It presents the complete architecture, and describes a simple subset of that architecture that can be used in low-cost homenet routers.</p>
+<h1 id="rfc.status"><a href="#rfc.status">Status of This Memo</a></h1>
+<p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
+<p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
+<p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
+<p>This Internet-Draft will expire on January 3, 2019.</p>
+<h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
+<p>Copyright (c) 2018 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
+<p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
+
+  
+  <hr class="noprint" />
+  <h1 class="np" id="rfc.toc"><a href="#rfc.toc">Table of Contents</a></h1>
+  <ul class="toc">
+
+  	<li>1.   <a href="#rfc.section.1">Introduction</a>
+</li>
+<li>2.   <a href="#rfc.section.2">Requirements</a>
+</li>
+<ul><li>2.1.   <a href="#rfc.section.2.1">Managed LAN versus Homenet</a>
+</li>
+<li>2.2.   <a href="#rfc.section.2.2">Homenet-specific considerations</a>
+</li>
+</ul><li>3.   <a href="#rfc.section.3">Terminology</a>
+</li>
+<li>4.   <a href="#rfc.section.4">Name</a>
+</li>
+<li>5.   <a href="#rfc.section.5">Authority</a>
+</li>
+<li>6.   <a href="#rfc.section.6">Resolution</a>
+</li>
+<li>7.   <a href="#rfc.section.7">Publication</a>
+</li>
+<ul><li>7.1.   <a href="#rfc.section.7.1">DNS Service Discovery Registration Protocol</a>
+</li>
+<li>7.2.   <a href="#rfc.section.7.2">Configuring Service Discovery</a>
+</li>
+</ul><li>8.   <a href="#rfc.section.8">Host Configurtion</a>
+</li>
+<li>9.   <a href="#rfc.section.9">Globally Unique Name</a>
+</li>
+<li>10.   <a href="#rfc.section.10">DNSSEC Validation</a>
+</li>
+<li>11.   <a href="#rfc.section.11">Support for Multiple Provisioning Domains</a>
+</li>
+<li>12.   <a href="#rfc.section.12">Using the Local Namespace While Away From Home</a>
+</li>
+<li>13.   <a href="#rfc.section.13">Management Considerations</a>
+</li>
+<li>14.   <a href="#rfc.section.14">Privacy Considerations</a>
+</li>
+<li>15.   <a href="#rfc.section.15">Security Considerations</a>
+</li>
+<li>16.   <a href="#rfc.section.16">IANA considerations</a>
+</li>
+<li>17.   <a href="#rfc.references">Normative References</a>
+</li>
+<li>Appendix A.   <a href="#rfc.appendix.A">Existing solutions</a>
+</li>
+<li><a href="#rfc.authors">Authors' Addresses</a>
+</li>
+
+
+  </ul>
+
+  <h1 id="rfc.section.1">
+<a href="#rfc.section.1">1.</a> <a href="#introduction" id="introduction">Introduction</a>
+</h1>
+<p id="rfc.section.1.p.1">This document is a homenet architecture document. The term &#8216;homenet&#8217; refers to a set of technologies that allow home network users to have a local-area network (LAN) with more than one physical link and, optionally, more than one internet service provider. Home network users are assumed not to be knowledgable in network operations, so homenets automatically configure themselves, providing connectivity and service discovery within the home with no operator intervention.  This document describes the aspect of homenet automatic configuration that has to do with service discovery and name resolution.</p>
+<p id="rfc.section.1.p.2">The homenet naming architecture consists of two parts: the simple naming architecture, and the advanced naming architecture. The advanced architecture provides approximate parity of features with a managed network, including the ability to publish services on the internet. The simple architecture provides a minimal set of features required to enable seamless service discovery on a multi-link home network, but does not attempt to provide feature parity with a managed LAN.</p>
+<p id="rfc.section.1.p.3">This document begins by presenting a motivational list of requirements and considerations, which should give the reader a clear idea of the scope of the problem being solved. It then explains how each requirement is addressed, and provides references for relevant standards documents describing the details of the implementation. Some requirements are not satisfied by the simple architecture; these are discussed in this document, but explained in more detail in the Advanced Homenet Naming Architecture document, which is to follow.</p>
+<h1 id="rfc.section.2">
+<a href="#rfc.section.2">2.</a> <a href="#requirements" id="requirements">Requirements</a>
+</h1>
+<p id="rfc.section.2.p.1">Name service on a local area network (LAN) requires the following:</p>
+<p></p>
+
+<ul>
+<li>Name: a forward domain under which information about local services will be published</li>
+<li>Authority: a name server that is authoritative for at least one forward domain and one or two reverse domains that are applicable to that network and is capable of signing and publishing the zones using DNSSEC</li>
+<li>Resolution: a full-service caching DNS resolver that fully supports EDNS(0) and queries with the DO bit set</li>
+<li>Publication: a mechanism that  <ul>
+<li>allows services on the LAN to publish information about the services they provide</li>
+<li>allows services to publish information on how to reach them</li>
+<li>manages the lifetime of such information, so that it persists long enough to prevent spoofing, but protects end users from seeing stale information</li>
+</ul>
+</li>
+<li>Host configuration: one or more automatic mechanisms (e.g. DHCP or RA) that provide:  <ul>
+<li>caching resolver information to hosts on the LAN</li>
+<li>information about how services on the LAN can publish information</li>
+</ul>
+</li>
+<li>Trust: some basis for trusting the information that is provided by the service discovery system</li>
+</ul>
+<h1 id="rfc.section.2.1">
+<a href="#rfc.section.2.1">2.1.</a> <a href="#managed-lan-versus-homenet" id="managed-lan-versus-homenet">Managed LAN versus Homenet</a>
+</h1>
+<p id="rfc.section.2.1.p.1">A managed network is one that has a (human) manager, or operator.  The operator has authority over the network, and the authority to publish names in a forward DNS tree, and reverse names in the reverse tree.  The operator has the authority to sign the respective trees with DNSSEC, and acquire TLS certificates for hosts/servers within the network.</p>
+<p id="rfc.section.2.1.p.2">On a managed LAN, many of these services can be provided by operators. When a new printer is added to the network, it can be added to the service discovery system (the authoritative server) manually. When a printer is taken out of service, it can be removed. In this scenario, the role of &#8220;publisher&#8221; is filled by the network operator.</p>
+<p id="rfc.section.2.1.p.3">In many managed LANs, establishment of trust for service discovery is simply on the basis of a belief that the local resolver will give a correct answer. Once the service has been discovered and chosen, there may be some security (e.g., TLS) that protects the connection to the service, but the trust model is often just &#8220;you&#8217;re connected to a network you trust, so you can trust the printer that you discovered on this network.&#8221;</p>
+<p id="rfc.section.2.1.p.4">A homenet does not have an operator, so functions that would normally be performed by the operator have to happen automatically. This has implications for trust establishment&#8212;since there is no operator controlling what services are published locally, some other mechanism is required for basic trust establishment. Additionally, whereas in a managed LAN with multiple links to the Internet, the network operator can configure the network so that multihoming is handled seamlessly, in a homenet, multihoming must be handled using multiple provisioning domains <a href="#RFC7556" class="xref">[RFC7556]</a>.</p>
+<h1 id="rfc.section.2.2">
+<a href="#rfc.section.2.2">2.2.</a> <a href="#homenet-specific-considerations" id="homenet-specific-considerations">Homenet-specific considerations</a>
+</h1>
+<p id="rfc.section.2.2.p.1">A naming architecture for homenets therefore adds the following considerations:</p>
+<p></p>
+
+<ul>
+<li>All of the operations mentioned here must reliably function automatically, without any user intervention or debugging.</li>
+<li>Because user intervention cannot be required, naming conflicts must be resolved automatically, and, to the extent possible, transparently.</li>
+<li>Devices that provide services must be able to publish those services on the homenet, and those services must be available from any part of the homenet, not just the link to which the device is attached.</li>
+<li>Homenets must address the problem of multiple provisioning domains, in the sense that the DNS may give a different answer depending on whether caching resolvers at one ISP or another are queried.</li>
+</ul>
+<p id="rfc.section.2.2.p.3">An additional requirement from the Homenet Architecture <a href="#RFC7556" class="xref">[RFC7556]</a> is that hosts are not required to implement any homenet-specific capabilities in order to discover and access services on the homenet. This architecture may define optional homenet-specific features, but hosts that do not implement these features must work on homenets.</p>
+<h1 id="rfc.section.3">
+<a href="#rfc.section.3">3.</a> <a href="#terminology" id="terminology">Terminology</a>
+</h1>
+<p id="rfc.section.3.p.1">This document uses the following terms and abbreviations:</p>
+<p></p>
+
+<dl>
+<dt>HNR</dt>
+<dd style="margin-left: 8">Homenet Router</dd>
+<dt>SHNR</dt>
+<dd style="margin-left: 8">Homenet Router implementing simple homenet naming architecture</dd>
+<dt>AHNR</dt>
+<dd style="margin-left: 8">Homenet Router implementing advanced homenet naming architecture</dd>
+<dt>ISP</dt>
+<dd style="margin-left: 8">Internet Service Provider</dd>
+<dt>Forward Mapping</dt>
+<dd style="margin-left: 8">A mapping between a host name or service name and some information about that host or service.</dd>
+<dt>Reverse Mapping</dt>
+<dd style="margin-left: 8">A mapping between an IP address and the host that has that IP address.</dd>
+</dl>
+<h1 id="rfc.section.4">
+<a href="#rfc.section.4">4.</a> <a href="#name" id="name">Name</a>
+</h1>
+<p id="rfc.section.4.p.1">In order for names to be published on a homenet, it is necessary that there be a set of domain names under which such names are published. These domain names, together, are referred to as the &#8220;local domains.&#8221; By default, homenets use the reserved domain &#8216;home.arpa.&#8217; for publishing names for forward lookups. So a host called &#8216;example&#8217; that published its name on the homenet would publish its records on the domain name &#8216;example.home.arpa.&#8217;. Because &#8216;home.arpa.&#8217; is used by all homenets, it has no global meaning, and names published under the domain &#8216;home.arpa&#8217; cannot be used outside of the homenet on which they are published.</p>
+<p id="rfc.section.4.p.2">Homenet routers that implement advanced homenet naming may also be configured with a global domain. How such a domain is configured is out of scope for this document, and is described in the Advanced Homenet Naming Architecture document [advanced].</p>
+<p id="rfc.section.4.p.3">In addition to the name, which defaults to &#8216;home.arpa.&#8217;, names are needed for reverse lookups. These names are dependent on the IP addressing used on the homenet. If the homenet is addressed with IPv4, a reverse domain corresponding to the IPv4 subnet <a href="#RFC1034" class="xref">[RFC1034]</a> section 5.2.1 should be constructed. For example, if the homenet is allocating local IP addresses out of net 10 <a href="#RFC1918" class="xref">[RFC1918]</a>, a domain, &#8216;10.in-addr.arpa&#8217; would be required. Like &#8216;home.arpa.&#8217;, &#8216;10.in-addr.arpa&#8217; is a locally-served zone, and has no validity outside of the homenet.</p>
+<p id="rfc.section.4.p.4">If the homenet is addressed with IPv6, it is expected to have a unique local address prefix; subsets of this prefix will be advertised on every link on the homenet. Every service on the homenet that supports IPv6 is expected to be reachable at an address that is configured using the ULA prefix. Therefore there is no need for any IPv6 reverse zone to be populated other than the ULA zone.  So for example if the homenet&#8217;s ULA prefix is fd00:2001:db8::/48, then the reverse domain name for the homenet would end in &#8216;8.b.d.0.1.0.0.2.0.0.d.f.ip6.arpa&#8217;.</p>
+<h1 id="rfc.section.5">
+<a href="#rfc.section.5">5.</a> <a href="#authority" id="authority">Authority</a>
+</h1>
+<p id="rfc.section.5.p.1">The authority role is provided by a name server that is authoritative for each of the local domains. SHNRs provide authoritative service for the homenet using DNSSD Discovery Broker <a href="#I-D.sctl-discovery-broker" class="xref">[I-D.sctl-discovery-broker]</a>. SHNRs also provide Discovery Relay service <a href="#I-D.sctl-dnssd-mdns-relay" class="xref">[I-D.sctl-dnssd-mdns-relay]</a>. On a homenet that has only SHNRs, each SHNR individually provides authoritative service for the whole homenet by using Discovery relays to discover services off the local link.</p>
+<p id="rfc.section.5.p.2">The Discovery Proxy model relies on each link having its own name. However, homenets do not actually have a way to name local links that will make any sense to the end user.  Consequently, this mechanism will not work without some tweaks. In order to address this, homenets will use Discovery Brokers <a href="#I-D.sctl-discovery-broker" class="xref">[I-D.sctl-discovery-broker]</a>. The discovery broker will be configured so that a single query for a particular service will be successful in providing the information required to access that service, regardless of the link it is on.</p>
+<p id="rfc.section.5.p.3">Artificial link names will be generated using HNCP.  These should only be visible to the user in graphical user interfaces in the event that the same name is claimed by a service on two links.  Services that are expected to be accessed by users who type in names should use <a href="#I-D.sctl-service-registration" class="xref">[I-D.sctl-service-registration]</a> if it is available.</p>
+<p id="rfc.section.5.p.4">It is possible that local services may offer services available on IP addresses in public as well as ULA prefixes.  Homenet hybrid proxies MUST filter out global IP addresses, providing only ULA addresses, similar to the process described in section 5.5.2 of <a href="#I-D.ietf-dnssd-hybrid" class="xref">[I-D.ietf-dnssd-hybrid]</a>.</p>
+<p id="rfc.section.5.p.5">This filtering applies to queries within the homenet; it is appropriate for non-ULA addresses to be used for offering services, because in some cases end users may want such services to be reachable outside of the homenet.  Configuring this is however out of scope for this document.</p>
+<h1 id="rfc.section.6">
+<a href="#rfc.section.6">6.</a> <a href="#resolution" id="resolution">Resolution</a>
+</h1>
+<p id="rfc.section.6.p.1">Name resolution is provided by a local DNS cache or proxy on the homenet, henceforth the &#8220;local resolver.&#8221;  All host queries are sent to this local resolver.  The local resolver may either act as a full-service caching resolver, or as a DNS proxy.  Its responsibility with respect to queries on the homenet is to notice queries for names for which the local authoritative server is authoritative.  Queries for such names are handled through the local authoritative server.  Queries for all other names are resolved either by forwarding them to an ISP-provided full service resolver, or by providing the full service resolver function locally.</p>
+<h1 id="rfc.section.7">
+<a href="#rfc.section.7">7.</a> <a href="#publication" id="publication">Publication</a>
+</h1>
+<h1 id="rfc.section.7.1">
+<a href="#rfc.section.7.1">7.1.</a> <a href="#dns-service-discovery-registration-protocol" id="dns-service-discovery-registration-protocol">DNS Service Discovery Registration Protocol</a>
+</h1>
+<p id="rfc.section.7.1.p.1">The DNSSD Service Registration protocol <a href="#I-D.sctl-service-registration" class="xref">[I-D.sctl-service-registration]</a> requires that DNS updates be validated on the basis that they are received on the local link.  To ensure that such registrations are actually received on local links in the homenet, updates are sent to the local relay proxy (<a href="#I-D.sctl-dnssd-mdns-relay" class="xref">[I-D.sctl-dnssd-mdns-relay]</a>) (XXX how?).</p>
+<p id="rfc.section.7.1.p.2">The relay proxy encapsulates the update and sends it to whatever Discovery Proxy is listening on the link; the Discovery proxy then either consumes the update directly, or forwards it to the authoritative resolver for the local service discovery zone.  If the registration protocol is not supported on the homenet, the Discovery Proxy rejects the update with a ??? RCODE.</p>
+<p id="rfc.section.7.1.p.3">Homenets are not required to support Service Registration.  Service registration requires a stateful authoritative DNS server; this may be beyond the capability of the minimal Homenet router.  However, more capable Homenet routers should provide this capability.  In order to make this work, minimal Homenet routers MUST implement the split hybrid proxy <a href="#I-D.sctl-dnssd-mdns-relay" class="xref">[I-D.sctl-dnssd-mdns-relay]</a>.  This enables a Homenet with one or more Homenet routers that provide a stateful registration cache to allow those routers to take over service, using Discovery Relays to service links that are connected using Homenet routers with more limited functionality.</p>
+<h1 id="rfc.section.7.2">
+<a href="#rfc.section.7.2">7.2.</a> <a href="#configuring-service-discovery" id="configuring-service-discovery">Configuring Service Discovery</a>
+</h1>
+<p id="rfc.section.7.2.p.1">Clients discovering services using <a href="#RFC6763" class="xref">DNS-SD</a> follow a two-step process.  The first step is for the client device to determine in which domain(s) to attempt to discover services.  The second step is for the client device to then seek desired service(s) in those domain(s).  For an example of the second step, given the desired service type &#8220;IPP Printing&#8221;, and the domains &#8220;local&#8221; and &#8220;meeting.ietf.org&#8221;, the client device forms the queries &#8220;_ipp._tcp.local. PTR ?&#8221; (resolved using Multicast DNS) and &#8220;_ipp._tcp.meeting.ietf.org PTR. ?&#8221; (resolved using Unicast DNS) and then presents the combined list of results to the user.</p>
+<p id="rfc.section.7.2.p.2">The first step, determining in which domain(s) to attempt to discover services, is performed in a variety of ways, as described in Section 11 of the <a href="#RFC6763" class="xref">DNS-Based Service Discovery specification</a>.</p>
+<p id="rfc.section.7.2.p.3">The domain &#8220;local&#8221; is generally always in the set of domains in which the client devices attempt to discover services, and other domains for service discovery may be configured manually by the user.</p>
+<p id="rfc.section.7.2.p.4">The device also learns additional domains automatically from its network environment.  For this automatic configuration discovery, special DNS queries are formulated.  To learn additional domain(s) in which to attempt to discover services, the query string &#8220;lb._dns_sd._udp&#8221; is prepended onto three different kinds of &#8220;bootstrap domain&#8221; to form DNS queries that allow the device to learn the configuration information.</p>
+<p id="rfc.section.7.2.p.5">One of these bootstrap domains is the fixed string &#8220;local&#8221;.  The device issues the query &#8220;lb._dns_sd._udp.local. PTR ?&#8221; (resolved using Multicast DNS), and if any answers are received, then they are added to the set of domains in which the client devices attempt to discover services.</p>
+<p id="rfc.section.7.2.p.6">Another kind of these bootstrap domains is name-based, derived from the <a href="#RFC2132" class="xref">DHCPv4 &#8220;domain name&#8221; option (code 15)</a> (for IPv4) or the <a href="#RFC8106" class="xref">DNS Search List (DNSSL) Router Advertisement option</a> (for IPv6).  If a domain in the DNSSL is &#8220;example.com&#8221;, then the device issues the query &#8220;lb._dns_sd._udp.example.com. PTR ?&#8221; (resolved using Unicast DNS), and if any answers are received, then they are likewise added to the set of domains in which the client devices attempt to discover services.</p>
+<p id="rfc.section.7.2.p.7">Finally, the third kind of bootstrap domain is address-based, derived from the device&#8217;s IP address(es) themselves.  If the device has IP address 192.168.1.100/24, then the device issues the query &#8220;lb._dns_sd._udp.0.1.168.192.in-addr.arpa. PTR ?&#8221; (resolved using Unicast DNS), and if any answers are received, then they are also added to the set of domains in which the client devices attempt to discover services.</p>
+<p id="rfc.section.7.2.p.8">Since there is an HNR on every link of a homenet, automatic configuration could be performed by having HNRs answer the &#8220;lb._dns_sd._udp.local. PTR ?&#8221; (Multicast DNS) queries.  However, because multicast is slow and unreliable on many modern network technologies like Wi-Fi, we prefer to avoid using it.  Instead we require that a homenet be configured to answer the name-based bootstrap queries.  By default the domain in the DNSSL communicated to the client devices will be &#8220;home.arpa&#8221;, and the homenet will be configured to correctly answer queries such as &#8220;lb._dns_sd._udp.example.com. PTR ?&#8221;, though client devices must not assume that the name will always be &#8220;home.arpa&#8221;. A client could be configured with any valid DNSSL, and should construct the appropriate bootstrap queries derived from the name(s) in their configured DNS Search List.</p>
+<p id="rfc.section.7.2.p.9">HNRs will answer domain enumeration queries against every IPv4 address prefix advertised on a homenet link, and every IPv6 address prefix advertised on a homenet link, including prefixes derived from the homenet&#8217;s ULA(s).  Whenever the &#8220;&lt;domain&gt;&#8221; sequence appears in this section, it references each of the domains mentioned in this paragraph.</p>
+<p id="rfc.section.7.2.p.10">Homenets advertise the availability of several browsing zones in the &#8220;b._dns_sd._udp.&lt;domain&gt;&#8221; subdomain.  By default, the &#8216;home.arpa&#8217; domain is advertised.  Similarly, &#8216;home.arpa&#8217; is advertised as the default browsing and service registration domain under &#8220;db._dns_sd._udp.&lt;domain&gt;&#8221;, &#8220;r._dns_sd._udp.&lt;domain&gt;&#8221;, &#8220;dr._dns_sd._udp.&lt;domain&gt;&#8221; and &#8220;lb._dns_sd._udp.&lt;domain&gt;&#8221;.</p>
+<p id="rfc.section.7.2.p.11">In order for this discovery process to work, the homenet must provide authoritative answers for each of the domains that might be queried.  To do this, it provides authoritative name service for the &#8216;ip6.arpa&#8217; and &#8216;in-addr.arpa&#8217; subdomains corresponding to each of the prefixes advertised on the homenet.  For example, consider a homenet with the 192.168.1.0/24, 2001:db8:1234:5600::/56 and fc01:2345:6789:1000::/56 prefixes.  This homenet will have to provide a name server that claims to be authoritative for 1.168.192.in-addr.arpa, 6.5.4.3.2.1.8.b.d.0.1.0.0.2.ip6.arpa and 0.0.9.8.7.6.5.4.3.2.1.0.c.f.ip6.arpa.</p>
+<p id="rfc.section.7.2.p.12">An IPv6-only homenet would not have an authoritative server for a subdomain of in-addr.arpa.  These public authoritative zones are required for the public prefixes even if the prefixes are not delegated.  However, they need not be accessible outside of the homenet.</p>
+<p id="rfc.section.7.2.p.13">It is out of the scope of this document to specify ISP behavior, but we note that ISPs have the option of securely delegating the zone, or providing an unsigned delegation, or providing no delegation.  Any delegation tree that does not include an unsigned delegation at or above the zone cut for the ip6.arpa reverse zone for the assigned prefix will fail to validate.</p>
+<p id="rfc.section.7.2.p.14">Ideally, an ISP should provide a secure delegation using a zone-signing key provided by the homenet.  However, that too is out of scope for this document.  Therefore, an ISP that wishes to support users of the simple homenet naming architecture will have to provide an unsigned delegation.  We do not wish, however, to discourage provisioning of signed delegations when that is possible.</p>
+<h1 id="rfc.section.8">
+<a href="#rfc.section.8">8.</a> <a href="#host-configurtion" id="host-configurtion">Host Configurtion</a>
+</h1>
+<p id="rfc.section.8.p.1">Hosts on the homenet receive a set of resolver IP addresses using either DHCP or RA.  IPv4-only hosts will receive IPv4 addresses of resolvers, if available, over DHCP.  IPv6-only hosts will receive resolver IPv6 addresses using either stateful (if available) or stateless DHCPv6, or through the Recursive DNS Server Option (<a href="#RFC8106" class="xref">[RFC8106]</a>, Section 5.1) in router advertisements.</p>
+<p id="rfc.section.8.p.2">All Homenet routers provide resolver information using both stateless DHCPv6 and RA; support for stateful DHCPv6 and DHCPv4 is optional, however if either service is offered, resolver addresses will be provided using that mechanism as well.</p>
+<h1 id="rfc.section.9">
+<a href="#rfc.section.9">9.</a> <a href="#globally-unique-name" id="globally-unique-name">Globally Unique Name</a>
+</h1>
+<p id="rfc.section.9.p.1">Automatic configuration of a globally unique name for the homenet is out of scope for this document.  However, homenet servers MUST allow the user to configure a globally unique name in place of the default name, &#8216;home.arpa.&#8217;  By default, even if configured with a global name, homenet routers MUST NOT answer queries from outside of the homenet for subdomains of that name.</p>
+<h1 id="rfc.section.10">
+<a href="#rfc.section.10">10.</a> <a href="#dnssec-validation" id="dnssec-validation">DNSSEC Validation</a>
+</h1>
+<p id="rfc.section.10.p.1">DNSSEC Validation for the &#8216;home.arpa&#8217; zone and for the locally-served &#8216;ip6.arpa and &#8216;in-adr.arpa&#8217; domains is not possible without a trust anchor.  Establishment of a trust anchor for such validation is out of scope for this document.</p>
+<p id="rfc.section.10.p.2">Homenets that have been configured with a globally unique domain MUST support DNSSEC signing of local names, and must provide a way to generate a KSK that can be used in the secure delegation of the globally unique domain assigned to the homenet.</p>
+<h1 id="rfc.section.11">
+<a href="#rfc.section.11">11.</a> <a href="#support-for-multiple-provisioning-domains" id="support-for-multiple-provisioning-domains">Support for Multiple Provisioning Domains</a>
+</h1>
+<p id="rfc.section.11.p.1">Homenets must support the Multiple Provisioning Domain Architecture <a href="#RFC7556" class="xref">[RFC7556]</a>.  Hosts connected to the homenet may or may not support multiple provisioning domains.  For hosts that do not support multiple provisioning domains, the homenet provides one or more resolvers that will answer queries for any provisioning domain.  Such hosts may receive answers to queries that either do not work as well if the host chooses a source address from a different provisioning domain, or does not work at all.  However, the default source address selection policy, longest-match [CITE], will result in the correct source address being chosen as long as the destination address has a close match to the prefix assigned by the ISP.</p>
+<p id="rfc.section.11.p.2">Hosts that support multiple provisioning domains will be provisioned with one or more resolvers per provisioning domain.  Such hosts can use the IP address of the resolver to determine which provisioning domain is applicable for a particular answer.</p>
+<p id="rfc.section.11.p.3">Each ISP has its own provisioning domain.  Because ISPs connections cannot be assumed to be persistent, the homenet has its own separate provisioning domain.</p>
+<p id="rfc.section.11.p.4">Configuration from the IPv4 DHCP server are treated as being part of the homenet provisioning domain.  The case where a homenet advertises IPv4 addresses from one or more public prefixes is out of scope for this document.  Such a configuration is NOT RECOMMENDED for homenets.</p>
+<p id="rfc.section.11.p.5">Configuration for IPv6 provisioning domains is done using the Multiple Provisioning Domain RA option [CITE].</p>
+<h1 id="rfc.section.12">
+<a href="#rfc.section.12">12.</a> <a href="#using-the-local-namespace-while-away-from-home" id="using-the-local-namespace-while-away-from-home">Using the Local Namespace While Away From Home</a>
+</h1>
+<p id="rfc.section.12.p.1">This architecture does not provide a way for service discovery to be performed on the homenet by devices that are not directly connected to a link that is part of the homenet.</p>
+<h1 id="rfc.section.13">
+<a href="#rfc.section.13">13.</a> <a href="#mgt" id="mgt">Management Considerations</a>
+</h1>
+<p id="rfc.section.13.p.1">This architecture is intended to be self-healing, and should not require management.  That said, a great deal of debugging and management can be done simply using the DNS Service Discovery protocol.</p>
+<h1 id="rfc.section.14">
+<a href="#rfc.section.14">14.</a> <a href="#privacy-considerations" id="privacy-considerations">Privacy Considerations</a>
+</h1>
+<p id="rfc.section.14.p.1">Privacy is somewhat protected in the sense that names published on the homenet are only visible to devices connected to the homenet.  This may be insufficient privacy in some cases.</p>
+<p id="rfc.section.14.p.2">The privacy of host information on the homenet is left to hosts.  Various mechanisms are available to hosts to ensure that tracking does not occur if it is not desired.  However, devices that need to have special permission to manage the homenet will inevitably reveal something about themselves when doing so.  It may be possible to use something like HTTP token binding <a href="#I-D.ietf-tokbind-https" class="xref">[I-D.ietf-tokbind-https]</a> to mitigate this risk.</p>
+<h1 id="rfc.section.15">
+<a href="#rfc.section.15">15.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
+</h1>
+<p id="rfc.section.15.p.1">There are some clear issues with the security model described in this document, which will be documented in a future version of this section.  A full analysis of the avenues of attack for the security model presented here have not yet been done, and must be done before the document is published.</p>
+<h1 id="rfc.section.16">
+<a href="#rfc.section.16">16.</a> <a href="#IANA" id="IANA">IANA considerations</a>
+</h1>
+<p id="rfc.section.16.p.1">No new actions are required by IANA for this document.</p>
+<p id="rfc.section.16.p.2">Note however that this document is relying on the allocation of &#8216;home.arpa&#8217; described in Special Use Top Level Domain &#8216;.home.arpa&#8217; <a href="#I-D.ietf-homenet-dot" class="xref">[I-D.ietf-homenet-dot]</a>.  This document therefore can&#8217;t proceed until that allocation is done. [RFC EDITOR PLEASE REMOVE THIS PARAGRAPH PRIOR TO PUBLICATION].</p>
+<h1 id="rfc.references">
+<a href="#rfc.references">17.</a> Normative References</h1>
+<table><tbody>
+<tr>
+<td class="reference"><b id="I-D.ietf-dnssd-hybrid">[I-D.ietf-dnssd-hybrid]</b></td>
+<td class="top">
+<a>Cheshire, S.</a>, "<a href="https://tools.ietf.org/html/draft-ietf-dnssd-hybrid-08">Discovery Proxy for Multicast DNS-Based Service Discovery</a>", Internet-Draft draft-ietf-dnssd-hybrid-08, March 2018.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.ietf-homenet-dot">[I-D.ietf-homenet-dot]</b></td>
+<td class="top">
+<a>Pfister, P.</a> and <a>T. Lemon</a>, "<a href="https://tools.ietf.org/html/draft-ietf-homenet-dot-14">Special Use Domain 'home.arpa.'</a>", Internet-Draft draft-ietf-homenet-dot-14, September 2017.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.ietf-mif-mpvd-ndp-support">[I-D.ietf-mif-mpvd-ndp-support]</b></td>
+<td class="top">
+<a>Korhonen, J.</a>, <a>Krishnan, S.</a> and <a>S. Gundavelli</a>, "<a href="https://tools.ietf.org/html/draft-ietf-mif-mpvd-ndp-support-03">Support for multiple provisioning domains in IPv6 Neighbor Discovery Protocol</a>", Internet-Draft draft-ietf-mif-mpvd-ndp-support-03, February 2016.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.ietf-tokbind-https">[I-D.ietf-tokbind-https]</b></td>
+<td class="top">
+<a>Popov, A.</a>, <a>Nystrom, M.</a>, <a>Balfanz, D.</a>, <a>Langley, A.</a>, <a>Harper, N.</a> and <a>J. Hodges</a>, "<a href="https://tools.ietf.org/html/draft-ietf-tokbind-https-18">Token Binding over HTTP</a>", Internet-Draft draft-ietf-tokbind-https-18, June 2018.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.sctl-discovery-broker">[I-D.sctl-discovery-broker]</b></td>
+<td class="top">
+<a>Cheshire, S.</a> and <a>T. Lemon</a>, "<a href="https://tools.ietf.org/html/draft-sctl-discovery-broker-00">Service Discovery Broker</a>", Internet-Draft draft-sctl-discovery-broker-00, July 2017.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.sctl-dnssd-mdns-relay">[I-D.sctl-dnssd-mdns-relay]</b></td>
+<td class="top">
+<a>Cheshire, S.</a> and <a>T. Lemon</a>, "<a href="https://tools.ietf.org/html/draft-sctl-dnssd-mdns-relay-04">Multicast DNS Discovery Relay</a>", Internet-Draft draft-sctl-dnssd-mdns-relay-04, March 2018.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.sctl-service-registration">[I-D.sctl-service-registration]</b></td>
+<td class="top">
+<a>Cheshire, S.</a> and <a>T. Lemon</a>, "<a href="https://tools.ietf.org/html/draft-sctl-service-registration-02">Service Registration Protocol for DNS-Based Service Discovery</a>", Internet-Draft draft-sctl-service-registration-02, July 2018.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC1034">[RFC1034]</b></td>
+<td class="top">
+<a>Mockapetris, P.</a>, "<a href="https://tools.ietf.org/html/rfc1034">Domain names - concepts and facilities</a>", STD 13, RFC 1034, DOI 10.17487/RFC1034, November 1987.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC1035">[RFC1035]</b></td>
+<td class="top">
+<a>Mockapetris, P.</a>, "<a href="https://tools.ietf.org/html/rfc1035">Domain names - implementation and specification</a>", STD 13, RFC 1035, DOI 10.17487/RFC1035, November 1987.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC1918">[RFC1918]</b></td>
+<td class="top">
+<a>Rekhter, Y.</a>, <a>Moskowitz, B.</a>, <a>Karrenberg, D.</a>, <a>de Groot, G.</a> and <a>E. Lear</a>, "<a href="https://tools.ietf.org/html/rfc1918">Address Allocation for Private Internets</a>", BCP 5, RFC 1918, DOI 10.17487/RFC1918, February 1996.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC2132">[RFC2132]</b></td>
+<td class="top">
+<a>Alexander, S.</a> and <a>R. Droms</a>, "<a href="https://tools.ietf.org/html/rfc2132">DHCP Options and BOOTP Vendor Extensions</a>", RFC 2132, DOI 10.17487/RFC2132, March 1997.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC2136">[RFC2136]</b></td>
+<td class="top">
+<a>Vixie, P.</a>, <a>Thomson, S.</a>, <a>Rekhter, Y.</a> and <a>J. Bound</a>, "<a href="https://tools.ietf.org/html/rfc2136">Dynamic Updates in the Domain Name System (DNS UPDATE)</a>", RFC 2136, DOI 10.17487/RFC2136, April 1997.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC6762">[RFC6762]</b></td>
+<td class="top">
+<a>Cheshire, S.</a> and <a>M. Krochmal</a>, "<a href="https://tools.ietf.org/html/rfc6762">Multicast DNS</a>", RFC 6762, DOI 10.17487/RFC6762, February 2013.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC6763">[RFC6763]</b></td>
+<td class="top">
+<a>Cheshire, S.</a> and <a>M. Krochmal</a>, "<a href="https://tools.ietf.org/html/rfc6763">DNS-Based Service Discovery</a>", RFC 6763, DOI 10.17487/RFC6763, February 2013.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC7368">[RFC7368]</b></td>
+<td class="top">
+<a>Chown, T.</a>, <a>Arkko, J.</a>, <a>Brandt, A.</a>, <a>Troan, O.</a> and <a>J. Weil</a>, "<a href="https://tools.ietf.org/html/rfc7368">IPv6 Home Networking Architecture Principles</a>", RFC 7368, DOI 10.17487/RFC7368, October 2014.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC7556">[RFC7556]</b></td>
+<td class="top">
+<a>Anipko, D.</a>, "<a href="https://tools.ietf.org/html/rfc7556">Multiple Provisioning Domain Architecture</a>", RFC 7556, DOI 10.17487/RFC7556, June 2015.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC8106">[RFC8106]</b></td>
+<td class="top">
+<a>Jeong, J.</a>, <a>Park, S.</a>, <a>Beloeil, L.</a> and <a>S. Madanapalli</a>, "<a href="https://tools.ietf.org/html/rfc8106">IPv6 Router Advertisement Options for DNS Configuration</a>", RFC 8106, DOI 10.17487/RFC8106, March 2017.</td>
+</tr>
+</tbody></table>
+<h1 id="rfc.appendix.A">
+<a href="#rfc.appendix.A">Appendix A.</a> <a href="#existing-solutions" id="existing-solutions">Existing solutions</a>
+</h1>
+<p id="rfc.section.A.p.1">Previous attempts to automate naming and service discovery in the context of a home network are able to function with varying degrees of success depending on the topology of the home network.  Unfortunately, these solutions do not fully address the requirements of homenets.</p>
+<p id="rfc.section.A.p.2">For example, Multicast DNS <a href="#RFC6762" class="xref">[RFC6762]</a> can provide naming and service discovery <a href="#RFC6763" class="xref">[RFC6763]</a>, but only within a single multicast domain.</p>
+<p id="rfc.section.A.p.3">The Domain Name System provides a hierarchical namespace <a href="#RFC1034" class="xref">[RFC1034]</a>, a mechanism for querying name servers to resolve names <a href="#RFC1035" class="xref">[RFC1035]</a>, a mechanism for updating namespaces by adding and removing names <a href="#RFC2136" class="xref">[RFC2136]</a>, and a mechanism for discovering services <a href="#RFC6763" class="xref">[RFC6763]</a>.  Unfortunately, DNS provides no mechanism for automatically provisioning new namespaces, and secure updates to namespaces require that the host submitting the update have a public or symmetric key that is known to the network and authorized for updates.  In an unmanaged network, the publication of and authorization of these keys is an unsolved problem.</p>
+<p id="rfc.section.A.p.4">Some managed networks get around this problem by having the DHCP server do DNS updates.  However, this doesn&#8217;t really work, because DHCP doesn&#8217;t provide a mechanism for updating service discovery records: it only supports publishing A and AAAA records.</p>
+<p id="rfc.section.A.p.5">This partially solves the trust problem: DHCP can validate that a device is at least connected to a network link that is actually part of the managed network.  This prevents an off-network attacker from registering a name, but provides no mechanism for actually validating the identity of the host registering the name.  For example, it would be easy for an attacker on the network to steal a registered name.</p>
+<p id="rfc.section.A.p.6">Hybrid Multicast DNS <a href="#I-D.ietf-dnssd-hybrid" class="xref">[I-D.ietf-dnssd-hybrid]</a> proposes a mechanism for extending multicast DNS beyond a single multicast domain.  However, in order to use this as a solution, some shortcomings need to be considered.  Most obviously, it requires that every multicast domain have a separate name.  This then requires that the homenet generate names for every multicast domain.  These names would then be revealed to the end user.  But since they would be generated automatically and arbitrarily, they would likely cause confusion rather than clarity, and in degenerate cases requires that the end user have a mental model of the topology of the network in order to guess on which link a given service may appear.</p>
+<p id="rfc.section.A.p.7">At present, the approach we intend to take with respect to disambiguation is that this will not be solved at a protocol level for devices that do not implement the registration protocol.</p>
+<h1 id="rfc.authors"><a href="#rfc.authors">Authors' Addresses</a></h1>
+<div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Ted Lemon</span> 
+	  <span class="n hidden">
+		<span class="family-name">Lemon</span>
+	  </span>
+	</span>
+	<span class="org vcardline">Nibbhaya Consulting</span>
+	<span class="adr">
+	  <span class="vcardline">P.O. Box 958</span>
+
+	  <span class="vcardline">
+		<span class="locality">Brattleboro</span>,  
+		<span class="region">Vermont</span> 
+		<span class="code">05301</span>
+	  </span>
+	  <span class="country-name vcardline">United States of America</span>
+	</span>
+	<span class="vcardline">EMail: <a href="mailto:mellon@fugue.com">mellon@fugue.com</a></span>
+
+  </address>
+</div><div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Daniel Migault</span> 
+	  <span class="n hidden">
+		<span class="family-name">Migault</span>
+	  </span>
+	</span>
+	<span class="org vcardline">Ericsson</span>
+	<span class="adr">
+	  <span class="vcardline">8400 boulevard Decarie</span>
+
+	  <span class="vcardline">
+		<span class="locality">Montreal, QC H4P 2N2</span>,  
+		<span class="region"></span>
+		<span class="code"></span>
+	  </span>
+	  <span class="country-name vcardline">Canada</span>
+	</span>
+	<span class="vcardline">EMail: <a href="mailto:daniel.migault@ericsson.com">daniel.migault@ericsson.com</a></span>
+
+  </address>
+</div><div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Stuart Cheshire</span> 
+	  <span class="n hidden">
+		<span class="family-name">Cheshire</span>
+	  </span>
+	</span>
+	<span class="org vcardline">Apple Inc.</span>
+	<span class="adr">
+	  <span class="vcardline">1 Infinite Loop</span>
+
+	  <span class="vcardline">
+		<span class="locality">Cupertino</span>,  
+		<span class="region">California</span> 
+		<span class="code">95014</span>
+	  </span>
+	  <span class="country-name vcardline">USA</span>
+	</span>
+	<span class="vcardline">Phone: +1 408 974 3207</span>
+
+<span class="vcardline">EMail: <a href="mailto:cheshire@apple.com">cheshire@apple.com</a></span>
+
+  </address>
+</div>
+
+</body>
+</html>
