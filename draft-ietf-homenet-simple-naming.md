@@ -436,9 +436,6 @@ Support for SRP provides several advantages over DNSSD Discovery Proxy.   First,
 Support for the DNSSD SRP service is not sufficient to achieve full deployment of DNSSD SRP: it is also necessary that services advertise using DNSSD SRP.   Requiring such support is out of scope for this document; our goal is simply to specify path for upgrading to this service so that as adoption of SRP increases on devices providing service, it can actually be used.
 
 
-There is some urgency to this: not only is SRP likely to be a better choice on constrained node networks {{RFC7228}}, but increased use of time-slicing on wireless networks to provide resource sharing {{OBA}} suggests both that improving multicast performance on such networks is unlikely, and that indeed we can expect to see performance get worse, not better, over time.
-
-
 DNSSD SRP requires stateful authoritative DNS service; this may be beyond the capability of the minimal Homenet router.  However, more capable Homenet routers should provide this capability.
 
 

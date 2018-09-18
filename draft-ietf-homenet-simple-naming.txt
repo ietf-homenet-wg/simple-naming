@@ -77,7 +77,7 @@ Table of Contents
      7.2.  Configuring Service Discovery . . . . . . . . . . . . . .   9
    8.  Host Configuration  . . . . . . . . . . . . . . . . . . . . .  11
    9.  Globally Unique Name  . . . . . . . . . . . . . . . . . . . .  11
-   10. DNSSEC Validation . . . . . . . . . . . . . . . . . . . . . .  12
+   10. DNSSEC Validation . . . . . . . . . . . . . . . . . . . . . .  11
      10.1.  How trust is established . . . . . . . . . . . . . . . .  12
      10.2.  Records published under home.arpa  . . . . . . . . . . .  13
      10.3.  Validating Host Behavior for DNSSEC  . . . . . . . . . .  13
@@ -87,24 +87,24 @@ Table of Contents
    14. Implementation  . . . . . . . . . . . . . . . . . . . . . . .  16
      14.1.  Required Functions . . . . . . . . . . . . . . . . . . .  16
        14.1.1.  Discovery Proxy  . . . . . . . . . . . . . . . . . .  16
-       14.1.2.  DHCPv4 Server  . . . . . . . . . . . . . . . . . . .  17
+       14.1.2.  DHCPv4 Server  . . . . . . . . . . . . . . . . . . .  16
        14.1.3.  DHCPv6 Server  . . . . . . . . . . . . . . . . . . .  17
        14.1.4.  Router Advertisements  . . . . . . . . . . . . . . .  17
        14.1.5.  DNS Proxy  . . . . . . . . . . . . . . . . . . . . .  17
-     14.2.  Optional Functions . . . . . . . . . . . . . . . . . . .  18
-       14.2.1.  Discovery Broker . . . . . . . . . . . . . . . . . .  18
+     14.2.  Optional Functions . . . . . . . . . . . . . . . . . . .  17
+       14.2.1.  Discovery Broker . . . . . . . . . . . . . . . . . .  17
    15. HNR Behaviors . . . . . . . . . . . . . . . . . . . . . . . .  18
      15.1.  A new host is joining the network  . . . . . . . . . . .  18
      15.2.  A new link is created  . . . . . . . . . . . . . . . . .  18
      15.3.  A host performs a DNS resolution or a service discovery
             lookup . . . . . . . . . . . . . . . . . . . . . . . . .  19
    16. Management Considerations . . . . . . . . . . . . . . . . . .  19
-   17. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  20
+   17. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  19
    18. Security Considerations . . . . . . . . . . . . . . . . . . .  20
    19. IANA considerations . . . . . . . . . . . . . . . . . . . . .  20
    20. References  . . . . . . . . . . . . . . . . . . . . . . . . .  20
      20.1.  Normative References . . . . . . . . . . . . . . . . . .  20
-     20.2.  Informative References . . . . . . . . . . . . . . . . .  23
+     20.2.  Informative References . . . . . . . . . . . . . . . . .  22
    Appendix A.  Existing solutions . . . . . . . . . . . . . . . . .  23
 
 
@@ -433,23 +433,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    service so that as adoption of SRP increases on devices providing
    service, it can actually be used.
 
-   There is some urgency to this: not only is SRP likely to be a better
-   choice on constrained node networks [RFC7228], but increased use of
-   time-slicing on wireless networks to provide resource sharing [OBA]
-   suggests both that improving multicast performance on such networks
-   is unlikely, and that indeed we can expect to see performance get
-   worse, not better, over time.
-
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019                [Page 8]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    DNSSD SRP requires stateful authoritative DNS service; this may be
    beyond the capability of the minimal Homenet router.  However, more
    capable Homenet routers should provide this capability.
@@ -458,6 +441,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    Discovery Broker service [I-D.sctl-discovery-broker].  The Discovery
    Broker can combine answers from Discovery Proxies with answers from
    the DNSSD SRP service to provide a single DNSSD service.
+
+
+
+
+Lemon, et al.            Expires January 3, 2019                [Page 8]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
 
 7.2.  Configuring Service Discovery
 
@@ -498,14 +489,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    Another kind of these bootstrap domains is name-based, derived from
    the DHCPv4 "domain name" option (code 15) [RFC2132] (for IPv4) or the
    DNS Search List (DNSSL) Router Advertisement option [RFC8106] (for
-
-
-
-Lemon, et al.            Expires January 3, 2019                [Page 9]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    IPv6).  If a domain in the DNSSL is "example.com", then the device
    issues the query "lb._dns_sd._udp.example.com.  PTR ?" (resolved
    using Unicast DNS), and if any answers are received, then they are
@@ -515,6 +498,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    Finally, the third kind of bootstrap domain is address-based, derived
    from the device's IP address(es) themselves.  If the device has IP
    address 192.168.1.100/24, then the device issues the query
+
+
+
+Lemon, et al.            Expires January 3, 2019                [Page 9]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
+
    "lb._dns_sd._udp.0.1.168.192.in-addr.arpa.  PTR ?" (resolved using
    Unicast DNS), and if any answers are received, then they are also
    added to the set of domains in which the client devices attempt to
@@ -554,14 +545,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    To do this, it provides authoritative name service for the 'ip6.arpa'
    and 'in-addr.arpa' subdomains corresponding to each of the prefixes
    advertised on the homenet.  For example, consider a homenet with the
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 10]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    192.168.1.0/24, 2001:db8:1234:5600::/56 and fc01:2345:6789:1000::/56
    prefixes.  This homenet will have to provide a name server that
    claims to be authoritative for 1.168.192.in-addr.arpa,
@@ -571,6 +554,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    An IPv6-only homenet would not have an authoritative server for a
    subdomain of in-addr.arpa.  These public authoritative zones are
    required for the public prefixes even if the prefixes are not
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 10]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
+
    delegated.  However, they need not be accessible outside of the
    homenet.
 
@@ -611,13 +602,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    name, homenet routers MUST NOT answer queries from outside of the
    homenet for subdomains of that name.
 
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 11]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
 10.  DNSSEC Validation
 
    DNSSEC Validation for the 'home.arpa' zone and for the locally-served
@@ -625,6 +609,15 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    anchor.  Each HNR on a homenet generates its own private/public key
    pair that can serve as a trust anchor.  These keys are shared using
    HNCP [RFC7788].  HNRs MUST NOT use pre-installed keys: each HNR MUST
+
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 11]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
+
    generate its own key.  TODO: write an HNCP update that describes
    this.  Do we need key rollover?
 
@@ -666,6 +659,13 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    elect an HNR for which NOSIGN will be disabled.  This will repeat
    until there are three HNRs on the network for which NOSIGN is
    disabled.  If the number of HNRs on the network for which NOSIGN is
+   disabled is more than three, HNRs for which NOSIGN was enabled by
+   default may re-enable NOSIGN; the router that disabled NOSIGN most
+   recently re-enables it first.
+
+   The reason for this process is to avoid truly excessive responses,
+   while ensuring that there is a stable set of signers that persists
+   over time.  HNRs that are acting as signers may from time to time be
 
 
 
@@ -674,13 +674,6 @@ Lemon, et al.            Expires January 3, 2019               [Page 12]
 Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
 
-   disabled is more than three, HNRs for which NOSIGN was enabled by
-   default may re-enable NOSIGN; the router that disabled NOSIGN most
-   recently re-enables it first.
-
-   The reason for this process is to avoid truly excessive responses,
-   while ensuring that there is a stable set of signers that persists
-   over time.  HNRs that are acting as signers may from time to time be
    removed from the homenet; when this happens, the proposed process
    should result in the remaining keys being as old as possible, which
    makes it more likely that hosts that connect to a homenet
@@ -721,15 +714,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    delegation of 'home.arpa' in the DNS is not signed, this will not
    prevent names in home.arpa from being resolved.  Hosts MAY implement
    homenet-specific trust anchor behavior.  Doing so will allow hosts
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 13]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    both to identify specific homenet instances and to validate names
    under home.arpa on those homenet instances.
 
@@ -738,6 +722,13 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    identified by the set of keys published in the DNSKEY RRset on the
    name 'home.arpa.'  These keys will change over time as HNRs are added
    to or removed from the homenet.
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 13]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
 
    When a host connects to a particular homenet for the first time, it
    issues a query for the DNSKEY RRset published on 'home.arpa.'  It
@@ -779,13 +770,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    the key using some key from the homenet record that had previously
    been validated.  If no such key exists, the record fails validation.
 
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 14]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    Although validation of the top-level DNSKEY RRs in the DNSKEY RRset
    Hosts MAY maintain lists of keys that are known to exist on a
    homenet.  These keys can then be used to validate DNSSEC-signed
@@ -794,6 +778,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    the home.arpa name.  Each DNSKEY record returned in a response MUST
    be validated using each of the RRSIGs that apply to that key.  The
    entire set of keys is then associated with a single homenet; any one
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 14]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
+
    of these keys can then be used for DNSSEC validation of records
    published in that particular homenet.  Keys must not be assumed to be
    stable--HNRs may come and go from a homenet, and so new keys may be
@@ -832,6 +824,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    use the IP address of the resolver to determine which provisioning
    domain is applicable for a particular answer.
 
+   Each ISP has its own provisioning domain.  Because ISPs connections
+   cannot be assumed to be persistent, the homenet has its own separate
+   provisioning domain.
+
+   Configuration from the IPv4 DHCP server are treated as being part of
+   the homenet provisioning domain.  The case where a homenet advertises
+   IPv4 addresses from one or more public prefixes is out of scope for
+   this document.  Such a configuration is NOT RECOMMENDED for homenets.
 
 
 
@@ -841,15 +841,6 @@ Lemon, et al.            Expires January 3, 2019               [Page 15]
 
 Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
-
-   Each ISP has its own provisioning domain.  Because ISPs connections
-   cannot be assumed to be persistent, the homenet has its own separate
-   provisioning domain.
-
-   Configuration from the IPv4 DHCP server are treated as being part of
-   the homenet provisioning domain.  The case where a homenet advertises
-   IPv4 addresses from one or more public prefixes is out of scope for
-   this document.  Such a configuration is NOT RECOMMENDED for homenets.
 
    Configuration for IPv6 provisioning domains is done using the
    Multiple Provisioning Domain RA option (CITE).
@@ -890,14 +881,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    available on any other links of the home network.  A single Discovery
    Proxy for the whole network may be sufficient.  Each Discovery Proxy
    defines a Proxy Zone attached to a specific subdomain.  The subdomain
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 16]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    can have a link granularity.  The use of a single Discovery Proxy
    considers a single Proxy Zone for the whole home network.
 
@@ -907,6 +890,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    out of scope for this document.  The function that is required of the
    DHCPv4 server by this document is that it advertise "home.arpa" using
    the Domain Name ([RFC2132] section 3.17) and Domain Search List
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 16]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
+
    ([RFC3397]).  The DHCP server must also advertise at least one Domain
    Name Server ({{RFC2132 section 3.8) option that points to an IPv4
    address of the HNR, on which DNS queries for any domain name will be
@@ -944,16 +935,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    must be forwarded to an appropriate upstream DNS resolver provided by
    one of the ISPs to which the homenet is connected.  What about MPvD?
 
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 17]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
 14.2.  Optional Functions
 
 14.2.1.  Discovery Broker
@@ -965,6 +946,13 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    associated Proxy Zones.  In addition, the Broker is also aware of the
    Advertising Proxy that contains all resources registered by hosts or
    services.
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 17]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
 
    (Daniel is talking about the DNSSD Registration Server here.)  (Talk
    about required behavior for Registration Server if present, since if
@@ -1002,14 +990,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
        Relay.  The HNR MAY act as a Discovery Proxy, in which case it
        needs to discover the Discovery Broker and provides the necessary
        information so the Discovery Broker adds the new link domain -
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 18]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
        typically "linkxxx.home.arpa".  The name of the link is
        automatically configured from the IP prefix of the new link.  If
        there is no Discovery Broker, the HNR MUST be ready to play as a
@@ -1021,6 +1001,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
    2.  The HNR also needs to extends the Advertising Proxy to its link
        and is expected to instantiate a Advertising Proxy.
+
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 18]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
 
    3.  The HNR MUST also be able to provides the necessary information
        so the hosts and nodes attached to the link can perform the
@@ -1058,14 +1046,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    management can be done simply using the DNS Service Discovery
    protocol.
 
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 19]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
 17.  Privacy Considerations
 
    Privacy is somewhat protected in the sense that names published on
@@ -1077,6 +1057,15 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    does not occur if it is not desired.  However, devices that need to
    have special permission to manage the homenet will inevitably reveal
    something about themselves when doing so.  It may be possible to use
+
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 19]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
+
    something like HTTP token binding [I-D.ietf-tokbind-https] to
    mitigate this risk.
 
@@ -1113,15 +1102,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
               Extensions", RFC 2132, DOI 10.17487/RFC2132, March 1997,
               <https://www.rfc-editor.org/info/rfc2132>.
 
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 20]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    [RFC2136]  Vixie, P., Ed., Thomson, S., Rekhter, Y., and J. Bound,
               "Dynamic Updates in the Domain Name System (DNS UPDATE)",
               RFC 2136, DOI 10.17487/RFC2136, April 1997,
@@ -1131,6 +1111,16 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
               Protocol (DHCP) Domain Search Option", RFC 3397,
               DOI 10.17487/RFC3397, November 2002, <https://www.rfc-
               editor.org/info/rfc3397>.
+
+
+
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 20]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
 
    [RFC3646]  Droms, R., Ed., "DNS Configuration options for Dynamic
               Host Configuration Protocol for IPv6 (DHCPv6)", RFC 3646,
@@ -1168,6 +1158,16 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
               Architecture", RFC 7556, DOI 10.17487/RFC7556, June 2015,
               <https://www.rfc-editor.org/info/rfc7556>.
 
+   [RFC7788]  Stenberg, M., Barth, S., and P. Pfister, "Home Networking
+              Control Protocol", RFC 7788, DOI 10.17487/RFC7788, April
+              2016, <https://www.rfc-editor.org/info/rfc7788>.
+
+   [RFC8106]  Jeong, J., Park, S., Beloeil, L., and S. Madanapalli,
+              "IPv6 Router Advertisement Options for DNS Configuration",
+              RFC 8106, DOI 10.17487/RFC8106, March 2017,
+              <https://www.rfc-editor.org/info/rfc8106>.
+
+
 
 
 
@@ -1177,15 +1177,6 @@ Lemon, et al.            Expires January 3, 2019               [Page 21]
 
 Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
-
-   [RFC7788]  Stenberg, M., Barth, S., and P. Pfister, "Home Networking
-              Control Protocol", RFC 7788, DOI 10.17487/RFC7788, April
-              2016, <https://www.rfc-editor.org/info/rfc7788>.
-
-   [RFC8106]  Jeong, J., Park, S., Beloeil, L., and S. Madanapalli,
-              "IPv6 Router Advertisement Options for DNS Configuration",
-              RFC 8106, DOI 10.17487/RFC8106, March 2017,
-              <https://www.rfc-editor.org/info/rfc8106>.
 
    [I-D.ietf-dnssd-hybrid]
               Cheshire, S., "Discovery Proxy for Multicast DNS-Based
@@ -1222,18 +1213,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
               draft-sctl-discovery-broker-00 (work in progress), July
               2017.
 
-
-
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 22]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
 20.2.  Informative References
 
    [I-D.ietf-mboned-ieee802-mcast-problems]
@@ -1245,6 +1224,15 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    [OBA]      Stute, M., "Recipe for the Apple Wireless Direct Link Ad
               hoc Protocol", n.d., <https://arxiv.org/
               pdf/1808.03156.pdf>.
+
+
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 22]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
 
 Appendix A.  Existing solutions
 
@@ -1282,14 +1270,6 @@ Appendix A.  Existing solutions
 
    Hybrid Multicast DNS [I-D.ietf-dnssd-hybrid] proposes a mechanism for
    extending multicast DNS beyond a single multicast domain.  However,
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 23]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    in order to use this as a solution, some shortcomings need to be
    considered.  Most obviously, it requires that every multicast domain
    have a separate name.  This then requires that the homenet generate
@@ -1299,6 +1279,16 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    and in degenerate cases requires that the end user have a mental
    model of the topology of the network in order to guess on which link
    a given service may appear.
+
+
+
+
+
+
+Lemon, et al.            Expires January 3, 2019               [Page 23]
+
+Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+
 
    At present, the approach we intend to take with respect to
    disambiguation is that this will not be solved at a protocol level
@@ -1332,6 +1322,16 @@ Authors' Addresses
 
    Phone: +1 408 974 3207
    Email: cheshire@apple.com
+
+
+
+
+
+
+
+
+
+
 
 
 
