@@ -1,6 +1,6 @@
----
+﻿---
 ipr: trust200902
-docname: draft-ietf-homenet-simple-naming-latest
+docname: draft-ietf-homenet-simple-naming-03
 cat: info
 obsoletes: ''
 updates: ''
@@ -48,19 +48,35 @@ normative:
   RFC1918: 
   RFC2132: 
   RFC2136: 
+  RFC3397:
+  RFC3646:
+  RFC6303:
   RFC6762: 
   RFC6763: 
+  RFC7228:
+  RFC7336:
   RFC7368: 
   RFC7556: 
+  RFC7788:
   RFC8106: 
   I-D.ietf-dnssd-hybrid: 
   I-D.sctl-dnssd-mdns-relay: 
   I-D.sctl-service-registration: 
   I-D.ietf-mif-mpvd-ndp-support: 
   I-D.ietf-tokbind-https: 
-  I-D.ietf-homenet-dot: 
+  RFC8375: 
   I-D.sctl-discovery-broker: 
-
+informative:
+  I-D.ietf-mboned-ieee802-mcast-problems:
+  OBA:
+    target: https://arxiv.org/pdf/1808.03156.pdf
+    title: Recipe for the Apple Wireless Direct Link Ad hoc Protocol
+    author:
+        ins: M. Stute
+        name: Milan Stute
+        org: Secure Mobile Networking Lab, TU Darmstadt
+        date: 9 August 2018
+    PDF: https://arxiv.org/pdf/1808.03156.pdf
 
 --- abstract
 
@@ -84,7 +100,7 @@ This document is a homenet architecture document. The term 'homenet'
 refers to a set of technologies that allow home network users to have
 a local-area network (LAN) with more than one physical link and,
 optionally, more than one internet service provider. Home network
-users are assumed not to be knowledgable in network operations, so
+users are assumed not to be knowledgeable in network operations, so
 homenets automatically configure themselves, providing connectivity
 and service discovery within the home with no operator intervention.
 This document describes the aspect of homenet automatic configuration
@@ -200,11 +216,13 @@ A homenet does not have an operator, so functions that would normally
 be performed by the operator have to happen automatically. This has
 implications for trust establishment—since there is no operator
 controlling what services are published locally, some other mechanism
-is required for basic trust establishment. Additionally, whereas in a
-managed LAN with multiple links to the Internet, the network operator
-can configure the network so that multihoming is handled seamlessly,
-in a homenet, multihoming must be handled using multiple provisioning
-domains [RFC7556].
+is required for basic trust establishment. 
+
+
+Additionally, whereas in a managed LAN with multiple links to the Internet, the network operator can configure the network so that multihoming is handled seamlessly, in a homenet, multihoming must be handled using multiple provisioning domains {{RFC7556}}.
+
+
+This is an issue that needs to be addressed in the naming architecture because Content Delivery Networks (CDNs) often use the DNS as a way to encourage hosts to use nearby content servers ({{RFC7336}} Section 2.1.1).   This information is only valid in the context of a particular ISP; using the a DNS response from one ISP to contact a server through another ISP can result in poor performance or even failure to access the referenced resource.
 
 
 
@@ -299,7 +317,7 @@ Reverse Mapping
 In order for names to be published on a homenet, it is necessary that
 there be a set of domain names under which such names are
 published. These domain names, together, are referred to as the "local
-domains." By default, homenets use the reserved domain 'home.arpa.'
+domains." By default, homenets use the reserved domain 'home.arpa.' {{RFC8375}}
 for publishing names for forward lookups. So a host called 'example'
 that published its name on the homenet would publish its records on
 the domain name 'example.home.arpa.'. Because 'home.arpa.' is used by
@@ -308,10 +326,10 @@ domain 'home.arpa' cannot be used outside of the homenet on which they
 are published.
 
 
-Homenet routers that implement advanced homenet naming may also be
-configured with a global domain. How such a domain is configured is
-out of scope for this document, and is described in the Advanced
-Homenet Naming Architecture document [advanced].
+Homenet routers that implement may also be
+configured with a global domain. Support for delegation of a global
+name is optional for routers that implement authoritative name service,
+and not recommended for routers that don't.
 
 
 In addition to the name, which defaults to 'home.arpa.', names are
@@ -360,7 +378,7 @@ particular service will be successful in providing the information
 required to access that service, regardless of the link it is on.
 
 
-Artificial link names will be generated using HNCP.  These should only
+Artificial link names will be generated using HNCP {{RFC7788}}.  These should only
 be visible to the user in graphical user interfaces in the event that
 the same name is claimed by a service on two links.  Services that are
 expected to be accessed by users who type in names should use
@@ -403,43 +421,34 @@ service resolver function locally.
 # Publication
 
 
+Put in some diagrams here.
+
+
 ## DNS Service Discovery Registration Protocol
 
 
-The DNSSD Service Registration protocol
-{{I-D.sctl-service-registration}} requires that DNS updates be
-validated on the basis that they are received on the local link.  To
-ensure that such registrations are actually received on local links in
-the homenet, updates are sent to the local relay proxy
-({{I-D.sctl-dnssd-mdns-relay}}) (XXX how?).
+Support for the DNSSD Service Registration Protocol (DNSSD SRP) {{I-D.sctl-service-registration}} is not required for homenets.   However, HNRs that are capable of supporting DNSSD SRP SHOULD support it.
 
 
-The relay proxy encapsulates the update and sends it to whatever
-Discovery Proxy is listening on the link; the Discovery proxy then
-either consumes the update directly, or forwards it to the
-authoritative resolver for the local service discovery zone.  If the
-registration protocol is not supported on the homenet, the Discovery
-Proxy rejects the update with a ??? RCODE.
+Support for SRP provides several advantages over DNSSD Discovery Proxy.   First, DNSSD SRP provides a secure way of claiming service names.   Second, a claimed name is valid for the entire network covered by the SRP service, not just an individual link, as is the case with mDNS.   Third, SRP does not use multicast, and is therefore more reliable on links with constrained multicast support {{I-D.ietf-mboned-ieee802-mcast-problems}}.
 
 
-Homenets are not required to support Service Registration.  Service
-registration requires a stateful authoritative DNS server; this may be
-beyond the capability of the minimal Homenet router.  However, more
-capable Homenet routers should provide this capability.  In order to
-make this work, minimal Homenet routers MUST implement the split
-hybrid proxy {{I-D.sctl-dnssd-mdns-relay}}.  This enables a Homenet
-with one or more Homenet routers that provide a stateful registration
-cache to allow those routers to take over service, using Discovery
-Relays to service links that are connected using Homenet routers with
-more limited functionality.
+Support for the DNSSD SRP service is not sufficient to achieve full deployment of DNSSD SRP: it is also necessary that services advertise using DNSSD SRP.   Requiring such support is out of scope for this document; our goal is simply to specify path for upgrading to this service so that as adoption of SRP increases on devices providing service, it can actually be used.
 
 
+There is some urgency to this: not only is SRP likely to be a better choice on constrained node networks {{RFC7228}}, but increased use of time-slicing on wireless networks to provide resource sharing {{OBA}} suggests both that improving multicast performance on such networks is unlikely, and that indeed we can expect to see performance get worse, not better, over time.
+
+
+DNSSD SRP requires stateful authoritative DNS service; this may be beyond the capability of the minimal Homenet router.  However, more capable Homenet routers should provide this capability.
+
+
+Homenet routers that provide DNSSD SRP support MUST also provide DNS Discovery Broker service {{I-D.sctl-discovery-broker}}.   The Discovery Broker can combine answers from Discovery Proxies with answers from the DNSSD SRP service to provide a single DNSSD service.
 
 
 ## Configuring Service Discovery
 
 
-Clients discovering services using [DNS-SD](#RFC6763) follow a
+Clients discovering services using DNS-SD {{RFC6763}} follow a
 two-step process.  The first step is for the client device to
 determine in which domain(s) to attempt to discover services.  The
 second step is for the client device to then seek desired service(s)
@@ -567,7 +576,7 @@ provisioning of signed delegations when that is possible.
 
 
 
-# Host Configurtion
+# Host Configuration
 
 
 Hosts on the homenet receive a set of resolver IP addresses using
@@ -602,10 +611,90 @@ for subdomains of that name.
 # DNSSEC Validation
 
 
-DNSSEC Validation for the 'home.arpa' zone and for the locally-served
-'ip6.arpa and 'in-adr.arpa' domains is not possible without a trust
-anchor.  Establishment of a trust anchor for such validation is out of
-scope for this document.
+DNSSEC Validation for the 'home.arpa' zone and for the locally-served 'ip6.arpa and 'in-addr.arpa' domains is not possible without a trust anchor.  Each HNR on a homenet generates its own private/public key pair that can serve as a trust anchor.  These keys are shared using HNCP {{RFC7788}}. HNRs MUST NOT use pre-installed keys: each HNR MUST generate its own key.   TODO: write an HNCP update that describes this.   Do we need key rollover?
+
+
+## How trust is established
+
+
+Every homenet that publishes naming and service discovery information using the 'home.arpa' special-use domain will have its own set of keys that are used to sign responses.   Homenets can therefore be differentiated by noticing that the set of keys published in the DNSKEY RRset on 'home.arpa' is different.   Since homenets share keys using HNCP, it should never be the case that the same key is present on more than one homenet, and it should never be the case that some keys are not known.
+
+
+In order to establish trust, each homenet agrees on a set of keys that will be published.   Whenever a key is added to the set, every participating HNR generates a new RRSIG record that covers the keys.   These RRSIG records are shared among the HNRs using HNCP.   In principle, every key is signed and published.
+
+
+There is no upper bound other than cost and practicality on the number of HNRs that may be present on a homenet.  Because each HNR has its own key and generates its own RRSIG, in principle the set of DNSKEYs and RRSIGs published in the zone could be quite large.   However, because not every RRSIG must be validated every time, this is really the only practical constraint.
+
+
+HNRs MAY have a user setting, which we will call NOSIGN,  that disables key publication for that HNR.   When NOSIGN is enabled, if there are more than three HNRs present on the network for which NOSIGN is not disabled, those HNRs for which NOSIGN is disabled are not required to publish their keys in the DNSKEY RRset at 'home.arpa.'
+
+
+HNRs that provide DNSSD SRP service MUST by default disable NOSIGN.   HNRs that do not provide DNSSD SRP service MAY enable NOSIGN by default.   On a network where fewer than three HNRs have NOSIGN disabled, but more than three HNRs are present, HNCP will be used to elect an HNR for which NOSIGN will be disabled.   This will repeat until there are three HNRs on the network for which NOSIGN is disabled.   If the number of HNRs on the network for which NOSIGN is disabled is more than three, HNRs for which NOSIGN was enabled by default may re-enable NOSIGN; the router that disabled NOSIGN most recently re-enables it first.
+
+
+The reason for this process is to avoid truly excessive responses, while ensuring that there is a stable set of signers that persists over time.   HNRs that are acting as signers may from time to time be removed from the homenet; when this happens, the proposed process should result in the remaining keys being as old as possible, which makes it more likely that hosts that connect to a homenet infrequently will still successfully identify it.
+
+
+Homenets have more than one zone: not only the home.arpa zone, but also the zones for each of the individual links in the homenet.   Some links are served by only one HNR; some are served by several.   Each HNR that provides such a zone will have a DS record for its key on the delegation for that zone in home.arpa, whether it is a signer for home.arpa or not.
+
+
+A homenet must have one or more name servers that are authoritative for home.arpa.   If DNSSD SRP service is present, the domain that SRP updates is home.arpa, and so the primary SRP server is responsible for the content of the home.arpa zone.   However, many homenets will not have an SRP server; on these homenets, each HNR that is a signer also acts as an authoritative server for home.arpa.   If there is more than one SRP server on the homenet, one of the SRP servers will act as primary and the other(s) will act as secondaries.   (Describe the plumbing).
+
+
+## Records published under home.arpa
+
+
+This section should describe all the records published in the 'home.arpa' zone on HNRs that do not support SRP.   This is a subset of the records published when SRP is available, since services will be published directly under 'home.arpa.' when registered using SRP.
+
+
+XXX actually describe what's published under home.arpa! Also, where should this section actually be? XXX
+
+
+## Validating Host Behavior for DNSSEC
+
+
+Hosts are not required to implement any special behavior for homenets.   If a host implements no special behavior, it will not be able to validate DNS responses for home.arpa.   But because the delegation of 'home.arpa' in the DNS is not signed, this will not prevent names in home.arpa from being resolved.   Hosts MAY implement homenet-specific trust anchor behavior.   Doing so will allow hosts both to identify specific homenet instances and to validate names under home.arpa on those homenet instances.
+
+
+Hosts that wish to validate names on the homenet must keep track of the set of homenets to which they have connected.   Each homenet is identified by the set of keys published in the DNSKEY RRset on the name 'home.arpa.'   These keys will change over time as HNRs are added to or removed from the homenet. 
+
+
+When a host connects to a particular homenet for the first time, it issues a query for the DNSKEY RRset published on 'home.arpa.'   It searches its list of homenets, checking to see if any of the keys in the response are present in the list of keys known to belong to any previously-visited homenet.
+
+
+If it finds that there is no remembered homenet for which there is a matching key, then it is connected to a new homenet, and it creates a new record for that homenet and adds the keys it has been given to that record.   If appropriate, the host should prompt the user to indicate that it has discovered a new homenet and ask the user to supply a mnemonic name for that homenet.   Otherwise, it may construct a name for the homenet.
+
+
+When a host connects to a particular homenet to which it has previously connected, it knows this because it finds a homenet record containing at least one key that matches a key in the answer to the 'home.arpa IN DNSKEY' query.   However, it is possible that the set of keys for that homenet has changed since the last time the host did this query; in that case, some keys may no longer be present in the current RRset, and some new keys may have been added.
+
+
+   In order for the new DNSKEY response to be treated as belonging to the same homenet, the host must find a RRSIG record that covers the DNSKEY RRset and that is signed using a key that the host remembers.  This need not be one of the keys that was previously a signing key—any remembered DNSKEY from the home.arpa DNSKEY RRset is sufficient.    
+
+
+If no such RRSIG record exists, 
+
+
+The host marks keys that are missing as stale.   Any new keys that are seen must be validated using a previously-remembered key.   This validation can be done lazily: when some RRSIG under home.arpa needs to be validated, the chain of trust is followed up to 'home.arpa' according to normal DNSSEC rules.   The link in the chain of trust prior to validating 'home.arpa' will be signed with an RRSIG; if this RRSIG uses a key that has not been validated, then the host validates the key using some key from the homenet record that had previously been validated.   If no such key exists, the record fails validation.
+
+
+Although validation of the top-level DNSKEY RRs in the DNSKEY RRset 
+Hosts MAY maintain lists of keys that are known to exist on a homenet.   These
+keys can then be used to validate DNSSEC-signed answers in the homenet.   Each
+homenet is identified by the set of mutually-authenticated keys that is returned
+by an IN DNSKEY query to the home.arpa name.   Each DNSKEY record returned in a response MUST be validated using each of the RRSIGs that apply to that key.
+The entire set of keys is then associated with a single homenet; any one of these
+keys can then be used for DNSSEC validation of records published in that particular
+homenet.   Keys must not be assumed to be stable—HNRs may come and go from
+a homenet, and so new keys may be added, and old keys may be lost.   A new key
+can only be added by being signed by at least one pre-existing HNR key.
+
+
+Note: the rationale for doing this is that there's no way that HNRs can have a single
+secret key, because if they all know it, it's not a secret.   However, the work of validating
+all of the keys is a bit of a combinatorial explosion; it might be good to think of a less
+cross-product-y solution to this problem.   And of course I can think of lots of ways of
+attacking this; should we insist on at least two known keys signing a new key, for
+example?
 
 
 Homenets that have been configured with a globally unique domain MUST
@@ -627,7 +716,7 @@ will answer queries for any provisioning domain.  Such hosts may
 receive answers to queries that either do not work as well if the host
 chooses a source address from a different provisioning domain, or does
 not work at all.  However, the default source address selection
-policy, longest-match [CITE], will result in the correct source
+policy, longest-match (CITE), will result in the correct source
 address being chosen as long as the destination address has a close
 match to the prefix assigned by the ISP.
 
@@ -650,7 +739,7 @@ this document.  Such a configuration is NOT RECOMMENDED for homenets.
 
 
 Configuration for IPv6 provisioning domains is done using the Multiple
-Provisioning Domain RA option [CITE].
+Provisioning Domain RA option (CITE).
 
 
 
@@ -663,6 +752,101 @@ performed on the homenet by devices that are not directly connected to
 a link that is part of the homenet.
 
 
+# Expected Host Behavior
+
+
+It is expected that hosts will fall into one of two categories: hosts that are able to discover
+DNS browsing domains, and hosts that are not.   Hosts that can discover DNS browsing
+domains can be expected to successfully use service discovery across the entire homenet.
+Hosts that do not will only be able to discover services on the particular local subnet of the
+homenet to which they happen to be attached at any given time.
+
+
+This is not considered to be a problem, since it is understood by the authors that the vast
+majority of hosts that are capable of doing mDNS discovery are also capable of doing DNSSD
+discovery as described in {{RFC6763}}.
+
+
+# Implementation
+
+
+## Required Functions
+
+
+Each HNR implements a minimum set of necessary functions.   Some HNRs may also implement optional functionality.   The following functions are REQUIRED to be present in any HNR:
+
+
+### Discovery Proxy
+The home network has at least one Discovery Proxy in order to make the services advertised through service discovery using mDNS available on any other links of the home network.  A single Discovery Proxy for the whole network may be sufficient.  Each Discovery Proxy defines a Proxy Zone attached to a specific subdomain. The subdomain can have a link granularity. The use of a single Discovery Proxy considers a single Proxy Zone for the whole home network.
+
+
+### DHCPv4 Server
+
+
+For IPv4, the DHCP server may be required for addressing, but this is out of scope for this document.   The function that is required of the DHCPv4 server by this document is that it advertise "home.arpa" using the Domain Name ({{RFC2132}} section 3.17) and Domain Search List ({{RFC3397}}).   The DHCP server must also advertise at least one Domain Name Server ({{RFC2132 section 3.8) option that points to an IPv4 address of the HNR, on which DNS queries for any domain name will be answered on port 53.
+
+
+### DHCPv6 Server
+For IPv6, DHCPv6 is not required.   If a DHCPv6 server is present, it MUST NOT specify any name other than "home.arpa" in the (etc) (or say MUST NOT conflict with RA)
+
+
+is required to provide a DNS Recursive Name Server option {{RFC3646}} that lists an IPv6 address of an HNR that is able to answer queries for any domain name on port 53.   The DHCP server is also required to provide a Domain Name Search List option {{RFC3646}} that lists exactly one domain name, "home.arpa."
+
+
+### Router Advertisements
+
+
+Router Advertisements MUST contain ...
+
+
+### DNS Proxy
+Each HNR has a DNS Proxy which can differentiate between queries that are for domains on the homenet, queries for locally-served zones {{RFC6303}} not provided by the homenet, and queries that are for other names.
+
+
+This proxy must have a list of link-specific subdomains and be able to forward queries for those subdomains to the Discovery Proxy that is answering for that link, or it must forward all queries for home.arpa and for locally served domains to a Discovery Broker that is present on the homenet.   Both capabilities are required.   Queries for names that are neither locally-served nor subdomains of home.arpa must be forwarded to an appropriate upstream DNS resolver provided by one of the ISPs to which the homenet is connected. What about MPvD?
+
+
+## Optional Functions
+
+
+### Discovery Broker
+
+
+only one activated on the whole homenet. The home network has a single Discovery Broker. The Discovery Broker is believed to coordinates the resolution inside the home network.  First, the Discovery Broker is aware of the different Discovery Proxies and associated Proxy Zones.  In addition, the Broker is also aware of the Advertising Proxy that contains all resources registered by hosts or services.
+
+
+(Daniel is talking about the DNSSD Registration Server here.)
+(Talk about required behavior for Registration Server if present, since if present and done wrong it could break things.)
+Advertising Proxy (at least one for the whole network). The home network has a single Advertising Proxy specific homenet-aware devices or services register to.
+
+
+# HNR Behaviors
+
+
+## A new host is joining the network
+
+
+1. It is being provisioned with an IP address, and DNS Proxy via DHCPv6 option DNS Recursive Name Server option or the Neighbor Discovery Extension Recursive DNS Server Option. The DNS Proxy is always on the link so DNS Updates to the destination of the Advertising Proxies can be controlled.
+2. If the host or service is not homenet-aware, it MAY perform service discovery using mDNS on the link it is hosted, and sends DNS queries to the DNS Proxy. Only the latest is considered in this document.
+3. If the host/service is homenet aware, it performs service discovery using unicast DNS.  These DNS queries as well as those associated to the Global DNS are sent to the DNS Proxy.  The DNS Proxy is responsible to proceed to the appropriate resolution. The distinction between the different resolution is based on the "home.arpa" suffix.
+
+
+## A new link is created
+
+
+1. The HNR involved needs to extend the Discovery mechanism to that link.  Either the HNR implements a Discovery Proxy or a Discovery Relay.  The HNR MAY act as a Discovery Proxy, in which case it needs to discover the Discovery Broker and provides the necessary information so the Discovery Broker adds the new link domain - typically "linkxxx.home.arpa".  The name of the link is automatically configured from the IP prefix of the new link.  If there is no Discovery Broker, the HNR MUST be ready to play as a Discovery Broker in addition to the Discovery Proxy.  If the HNR is informed of the existence of a Discovery Discovery, the HNR may prefer to act as a Discovery Relay and attempt to associate with the Discovery Proxy.  In case the association fails, the HNR MUST fall back to instantiate a Discovery Proxy.
+2. The HNR also needs to extends the Advertising Proxy to its link and is expected to instantiate a Advertising Proxy.
+3. The HNR MUST also be able to provides the necessary information so the hosts and nodes attached to the link can perform the resolution via the DNS Proxy.
+When the no DNS Proxy is found inside the homenet work, that is instantiated with a non local scope IP address, the HNR MUST instantiate a DNS Proxy.
+
+
+## A host performs a DNS resolution or a service discovery lookup
+
+
+1. A hosts that is not homenet-aware sends mDNS queries on its LAN and DNS queries on the DNS Proxy.
+2. A host that is homenet aware sends all DNS unicast queries to the DNS Proxy.
+3. The requests that are not intended for the Global DNS are identified by the "home.arpa" suffix.  These requests are sent to the Discovery Broker.  The Discovery Broker performs two resolutions one against the Advertising Proxies and one against the Discovery Proxies.  Results are aggregated back to the DNS Proxy.
+4. Global DNS resolutions are forwarded to the resolver by the DNS Proxy.  The DNS Proxy may use different rules to select the appropriated resolver.  When the DNS requested is performed with a non local IP address, the DNS Proxy may use that IP address to identify the appropriated resolver.  When the IP address is of local scope, the DNS Proxy may partition the naming space between the resolvers.
 
 
 # Management Considerations {#mgt}
@@ -711,15 +895,6 @@ the document is published.
 
 
 No new actions are required by IANA for this document.
-
-
-Note however that this document is relying on the allocation of
-'home.arpa' described in Special Use Top Level Domain '.home.arpa'
-{{I-D.ietf-homenet-dot}}.  This document therefore can't proceed until
-that allocation is done. [RFC EDITOR PLEASE REMOVE THIS PARAGRAPH
-PRIOR TO PUBLICATION].
-
-
 
 
 --- back
@@ -779,4 +954,4 @@ guess on which link a given service may appear.
 
 At present, the approach we intend to take with respect to
 disambiguation is that this will not be solved at a protocol level for
-devices that do not implement the registration protocol. 
+devices that do not implement the registration protocol.
