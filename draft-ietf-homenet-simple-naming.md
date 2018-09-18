@@ -68,15 +68,6 @@ normative:
   I-D.sctl-discovery-broker: 
 informative:
   I-D.ietf-mboned-ieee802-mcast-problems:
-  OBA:
-    target: https://arxiv.org/pdf/1808.03156.pdf
-    title: Recipe for the Apple Wireless Direct Link Ad hoc Protocol
-    author:
-        ins: M. Stute
-        name: Milan Stute
-        org: Secure Mobile Networking Lab, TU Darmstadt
-        date: 9 August 2018
-    PDF: https://arxiv.org/pdf/1808.03156.pdf
 
 --- abstract
 
