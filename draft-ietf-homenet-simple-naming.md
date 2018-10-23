@@ -41,32 +41,28 @@ author:
   phone: "+1 408 974 3207"
   email: cheshire@apple.com
 
+normative:
   RFC1034: 
   RFC1035: 
   RFC1918: 
-  RFC2132: 
   RFC2136: 
-  RFC3397:
-  RFC3646:
-  RFC6303:
+  RFC4033:
+  RFC4193:
   RFC6762: 
   RFC6763: 
-  RFC7228:
   RFC7336:
-  RFC7368: 
   RFC7556: 
   RFC7788:
-  RFC8106: 
-  I-D.ietf-dnssd-hybrid: 
-  I-D.sctl-dnssd-mdns-relay: 
-  I-D.sctl-service-registration: 
-  I-D.ietf-mif-mpvd-ndp-support: 
-  I-D.ietf-tokbind-https: 
   RFC8375: 
-  I-D.sctl-discovery-broker: 
+  I-D.ietf-dnssd-hybrid: 
+  I-D.sctl-service-registration: 
+  I-D.ietf-dnsop-session-signal: 
+  I-D.ietf-dnssd-push:
+  I-D.ietf-intarea-provisioning-domains:
   localzones:
     title: Locally-Served DNS Zones
-    org: Internet Assigned Numbers Authority
+    author:
+      org: Internet Assigned Numbers Authority
     target: https://www.iana.org/assignments/locally-served-dns-zones/locally-served-dns-zones.xhtml
 informative:
   I-D.ietf-mboned-ieee802-mcast-problems:
@@ -275,7 +271,7 @@ fd00:2001:db8::/48, then the reverse domain name for the homenet would end in
 There are two types of authoritative name service on the homenet.  Every link on the homenet has
 a zone that is a subdomain of the homenet's primary domain.  Authority for these zones is local
 to the HNR that is currently authoritative for that zone.  The contents of these zones are
-served using DNSSD Discovery Proxy {{draft-ietf-dnssd-hybrid}}.  Consequently, there is no need
+served using DNSSD Discovery Proxy {{I-D.ietf-dnssd-hybrid}}.  Consequently, there is no need
 for database replication in the case that a new HNR is elected; that HNR simply takes over the
 Discovery Relay function.
 
@@ -343,13 +339,13 @@ Some contents are required for the homenet domain, whether it is stateful or sta
   The default browsing domain is simply the homenet domain.
 * If DNSSD SRP is supported (that is, if stateful authoritative service is present), then an SRV
   record must be published, along with a list of available registration zones containing exactly
-  one entry, for the homenet domain ({{draft-sctl-service-registration}} section 2).
+  one entry, for the homenet domain ({{I-D.sctl-service-registration}} section 2).
 * Also if DNSSD SRP is supported, then one or more A and/or AAAA records must be published under
   the name that the SRV record points to, which should be a single label subdomain of the
   homenet domain.
 
 Both stateful and stateless authoritative servers provided by HNRs must support DNS Stateful
-Operations {{I-D.ietf-dnsop-session-signal}} and DNS Push {{draft-ietf-dnssd-push}} for the
+Operations {{I-D.ietf-dnsop-session-signal}} and DNS Push {{I-D.ietf-dnssd-push}} for the
 names for which they are authoritative.
 
 ## Authoritative name service for per-link subdomains of the homenet domain
@@ -510,7 +506,7 @@ source addresses for prefixes that are in that provisioning domain.
 # Publication
 
 Names are published either using Multicast DNS Service Discovery {{RFC6762}} or DNSSD Service
-Registration Protocol ({{draft-sctl-service-registration}}).  Reverse mappings are published
+Registration Protocol ({{I-D.sctl-service-registration}}).  Reverse mappings are published
 using Homenet Reverse Mapping Update Protocol {{HRUMPH}}.
 
 ## DNSSD Service Registration Protocol
