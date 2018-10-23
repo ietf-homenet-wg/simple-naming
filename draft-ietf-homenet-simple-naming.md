@@ -758,7 +758,7 @@ be to this document, and the Assignee and Contact information should reference t
 this document.  The Description should be as follows:
 
 Availability of Homenet Reverse Registration Protocol service for a given domain is advertised
-using an SRV record with an owner name of "_homenet-rrp._tcp.<domain>." in that domain, which
+using an SRV record with an owner name of "_homenet-rrp._tcp.&lt;domain&gt;." in that domain, which
 gives the target host and port where Homenet Reverse Registration service is provided for the
 named domain.
 
@@ -770,7 +770,7 @@ should be to this document, and the Assignee and Contact information should refe
 authors of this document.  The Description should be as follows:
 
 Availability of Homenet Delegation Registration Protocol service for a given domain is advertised
-using an SRV record with an owner name of "_homenet-derp._tcp.<domain>." in that domain, which
+using an SRV record with an owner name of "_homenet-derp._tcp.&lt;domain&gt;." in that domain, which
 gives the target host and port where Homenet Delegation Registration service is provided for the
 named domain.
 

@@ -5,13 +5,13 @@
 Network Working Group                                           T. Lemon
 Internet-Draft                                       Nibbhaya Consulting
 Intended status: Informational                                D. Migault
-Expires: January 3, 2019                                        Ericsson
+Expires: April 26, 2019                                         Ericsson
                                                              S. Cheshire
                                                               Apple Inc.
-                                                           July 02, 2018
+                                                        October 23, 2018
 
 
-        Simple Homenet Naming and Service Discovery Architecture
+           Homenet Naming and Service Discovery Architecture
                   draft-ietf-homenet-simple-naming-03
 
 Abstract
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on January 3, 2019.
+   This Internet-Draft will expire on April 26, 2019.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Lemon, et al.            Expires January 3, 2019                [Page 1]
+Lemon, et al.            Expires April 26, 2019                 [Page 1]
 
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+Internet-Draft           Homenet Naming/SD Arch             October 2018
 
 
    include Simplified BSD License text as described in Section 4.e of
@@ -67,52 +67,57 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
    2.  Requirements  . . . . . . . . . . . . . . . . . . . . . . . .   3
      2.1.  Managed LAN versus Homenet  . . . . . . . . . . . . . . .   4
+       2.1.1.  Multiple Provisioning Domains . . . . . . . . . . . .   5
      2.2.  Homenet-specific considerations . . . . . . . . . . . . .   5
-   3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   5
+   3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   6
    4.  Name  . . . . . . . . . . . . . . . . . . . . . . . . . . . .   6
-   5.  Authority . . . . . . . . . . . . . . . . . . . . . . . . . .   7
+   5.  Authority . . . . . . . . . . . . . . . . . . . . . . . . . .   8
      5.1.  Reachability  . . . . . . . . . . . . . . . . . . . . . .   8
      5.2.  Link Names  . . . . . . . . . . . . . . . . . . . . . . .   8
      5.3.  Authoritative name service for the homenet domain . . . .   9
      5.4.  Authoritative name service for per-link subdomains of the
-           homenet domain  . . . . . . . . . . . . . . . . . . . . .   9
+           homenet domain  . . . . . . . . . . . . . . . . . . . . .  10
      5.5.  Authoritative name service for the ULA reverse mapping
            domain  . . . . . . . . . . . . . . . . . . . . . . . . .  10
      5.6.  Authoritative name service for the RFC1918 reverse
            mapping domains . . . . . . . . . . . . . . . . . . . . .  10
    6.  Resolution  . . . . . . . . . . . . . . . . . . . . . . . . .  11
-     6.1.  Round Robining  . . . . . . . . . . . . . . . . . . . . .  12
+     6.1.  Round Robining  . . . . . . . . . . . . . . . . . . . . .  13
      6.2.  Retransmission  . . . . . . . . . . . . . . . . . . . . .  13
      6.3.  DNS Stateful Operations and DNS Push  . . . . . . . . . .  13
-     6.4.  Multicast DNS . . . . . . . . . . . . . . . . . . . . . .  13
-     6.5.  Host behavior . . . . . . . . . . . . . . . . . . . . . .  13
+     6.4.  Multicast DNS . . . . . . . . . . . . . . . . . . . . . .  14
+     6.5.  Host behavior . . . . . . . . . . . . . . . . . . . . . .  14
    7.  Publication . . . . . . . . . . . . . . . . . . . . . . . . .  14
      7.1.  DNSSD Service Registration Protocol . . . . . . . . . . .  14
-     7.2.  Homenet Reverse Mapping Update Protocol . . . . . . . . .  14
-       7.2.1.  Adding ULA reverse mappings . . . . . . . . . . . . .  14
-       7.2.2.  Adding RFC1918 reverse mappings . . . . . . . . . . .  15
-   8.  Host Configuration  . . . . . . . . . . . . . . . . . . . . .  15
+     7.2.  Homenet Reverse Mapping Update Protocol . . . . . . . . .  15
+       7.2.1.  Adding ULA reverse mappings . . . . . . . . . . . . .  15
+       7.2.2.  Adding RFC1918 reverse mappings . . . . . . . . . . .  16
+   8.  Host Configuration  . . . . . . . . . . . . . . . . . . . . .  16
    9.  Globally Unique Names . . . . . . . . . . . . . . . . . . . .  16
-   10. DNSSEC Validation . . . . . . . . . . . . . . . . . . . . . .  16
+   10. DNSSEC Validation . . . . . . . . . . . . . . . . . . . . . .  17
      10.1.  How trust is established . . . . . . . . . . . . . . . .  17
-   11. Homenet Delegation Registration Protocol  . . . . . . . . . .  17
-   12. Using the Local Namespace While Away From Home  . . . . . . .  18
+   11. Homenet Delegation Registration Protocol  . . . . . . . . . .  18
+   12. Using the Local Namespace While Away From Home  . . . . . . .  19
    13. Expected Host Behavior  . . . . . . . . . . . . . . . . . . .  19
    14. Management Considerations . . . . . . . . . . . . . . . . . .  19
-   15. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  19
-   16. Security Considerations . . . . . . . . . . . . . . . . . . .  19
-   17. IANA considerations . . . . . . . . . . . . . . . . . . . . .  19
-   18. References  . . . . . . . . . . . . . . . . . . . . . . . . .  20
-     18.1.  Normative References . . . . . . . . . . . . . . . . . .  20
-     18.2.  Informative References . . . . . . . . . . . . . . . . .  22
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  22
+   15. Privacy Considerations  . . . . . . . . . . . . . . . . . . .  20
+   16. Security Considerations . . . . . . . . . . . . . . . . . . .  20
+   17. IANA considerations . . . . . . . . . . . . . . . . . . . . .  20
+     17.1.  Homenet Reverse Registration Protocol  . . . . . . . . .  20
+     17.2.  Homenet Delegation Registration Protocol . . . . . . . .  20
+     17.3.  Unique Local Address Reserved Documentation Prefix . . .  21
 
 
 
-Lemon, et al.            Expires January 3, 2019                [Page 2]
+Lemon, et al.            Expires April 26, 2019                 [Page 2]
 
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+Internet-Draft           Homenet Naming/SD Arch             October 2018
 
+
+   18. References  . . . . . . . . . . . . . . . . . . . . . . . . .  21
+     18.1.  Normative References . . . . . . . . . . . . . . . . . .  21
+     18.2.  Informative References . . . . . . . . . . . . . . . . .  23
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  23
 
 1.  Introduction
 
@@ -157,18 +162,18 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
    o  Publication: a mechanism that
 
+
+
+
+Lemon, et al.            Expires April 26, 2019                 [Page 3]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
+
       *  allows services on the LAN to publish information about the
          services they provide
 
       *  allows services to publish information on how to reach them
-
-
-
-
-Lemon, et al.            Expires January 3, 2019                [Page 3]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
 
       *  manages the lifetime of such information, so that it persists
          long enough to prevent spoofing, but protects end users from
@@ -212,30 +217,53 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    A homenet does not have an operator, so functions that would normally
    be performed by the operator have to happen automatically.  This has
    implications for trust establishment--since there is no operator
+
+
+
+
+Lemon, et al.            Expires April 26, 2019                 [Page 4]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
+
    controlling what services are published locally, some other mechanism
    is required for basic trust establishment.
 
+2.1.1.  Multiple Provisioning Domains
+
    Additionally, whereas in a managed LAN with multiple links to the
    Internet, the network operator can configure the network so that
-
-
-
-
-Lemon, et al.            Expires January 3, 2019                [Page 4]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    multihoming is handled seamlessly, in a homenet, multihoming must be
    handled using multiple provisioning domains [RFC7556].
 
-   This is an issue that needs to be addressed in the naming
-   architecture because Content Delivery Networks (CDNs) often use the
-   DNS as a way to encourage hosts to use nearby content servers
-   ([RFC7336] Section 2.1.1).  This information is only valid in the
-   context of a particular ISP; using the a DNS response from one ISP to
-   contact a server through another ISP can result in poor performance
-   or even failure to access the referenced resource.
+   When a host on a homenet connects to a host outside the homenet, and
+   the homenet is multihomed, the source address that the host uses for
+   connecting determines which upstream ISP connection is used.  In
+   principle, this is not a problem, because the Internet is a fully
+   connected network, so any host that is on the Internet can be reached
+   by any host on the Internet, regardless of how that host connects to
+   the Internet.
+
+   Unfortunately in practice this is not always the case.  Some ISPs
+   provide special services to their end users that are only accessible
+   when connected through the ISP.  When such a service is discovered
+   using that ISP's name server, a response will be provided that will
+   only work if the host connects using a prefix provided by that ISP.
+   If another ISP's prefix is used, the connection will fail.
+
+   In the case of content delivery networks (CDNs), using the name
+   service of one ISP and then connecting through a second ISP may seem
+   to work, but may provide very poor service.
+
+   In order to address this problem, the homenet naming architecture
+   takes two approaches.  First, for hosts that do not support
+   provisioning domain separation, we make sure that all ISP name
+   servers are consulted in such a way that Happy Eyeballs will tend to
+   work.  Second, for hosts that do support provisioning domain
+   separation, we provide information to the hosts to identify
+   provisioning domains, and we provide a mechanism that hosts can use
+   to indicate which provisioning domain to use for a particular DNS
+   query.
 
 2.2.  Homenet-specific considerations
 
@@ -244,6 +272,15 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
    o  All of the operations mentioned here must reliably function
       automatically, without any user intervention or debugging.
+
+
+
+
+
+Lemon, et al.            Expires April 26, 2019                 [Page 5]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
 
    o  Because user intervention cannot be required, naming conflicts
       must be resolved automatically, and, to the extent possible,
@@ -273,15 +310,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
    SHNR  Homenet Router implementing simple homenet naming architecture
 
-
-
-
-
-Lemon, et al.            Expires January 3, 2019                [Page 5]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    AHNR  Homenet Router implementing advanced homenet naming
       architecture
 
@@ -302,6 +330,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    In order for names to be published on a homenet, it is necessary that
    there be a set of domain names under which such names are published.
    These domain names, together, are referred to as the "local domains."
+
+
+
+Lemon, et al.            Expires April 26, 2019                 [Page 6]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
+
    By default, homenets publish names for forward lookups under the
    reserved domain 'home.arpa.'  [RFC8375] publishing names.
 
@@ -331,13 +367,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    delegation from the root; in this case, the homenet domainname will
    be 'home.arpa.'
 
-
-
-Lemon, et al.            Expires January 3, 2019                [Page 6]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    In addition to the homenet domain, names are needed for reverse
    lookups.  These names are dependent on the IP addressing used on the
    homenet.  If the homenet is addressed with IPv4, a reverse domain
@@ -355,8 +384,15 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    reachable at an address that is configured using the ULA prefix.
    Therefore there is no need for any IPv6 reverse zone to be populated
    other than the ULA zone.  So for example if the homenet's ULA prefix
-   is fd00:2001:db8::/48, then the reverse domain name for the homenet
+   is fc00:2001:db8::/48, then the reverse domain name for the homenet
    would end in '8.b.d.0.1.0.0.2.0.0.d.f.ip6.arpa'.
+
+
+
+Lemon, et al.            Expires April 26, 2019                 [Page 7]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
 
 5.  Authority
 
@@ -382,18 +418,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    servers are present, the primary and secondary servers for these
    subdomains will be the same as for the homenet domain.
 
-
-
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019                [Page 7]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
 5.1.  Reachability
 
    Whether the homenet domain is a global domain name or not, HNRs
@@ -417,6 +441,15 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    links.  Each of these links will be named by the frequency band the
    link supports, 2.4ghz or 5ghz.
 
+
+
+
+
+Lemon, et al.            Expires April 26, 2019                 [Page 8]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
+
    The HNR is named using its manufacturer name.  If, as is likely, two
    or more HNRs from the same manufacturer are present on a homenet,
    then the HNR name is made up of the manufacturer name plus as many
@@ -439,16 +472,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    being referenced.  In the event that the HNR that is providing
    authoritative service for that link changes, the link name changes.
    This should only happen if the network topology changes.
-
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019                [Page 8]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
 
    If the appearance of a new HNR requires that the name of an existing
    HNR change, then the names of all the links managed by that existing
@@ -475,6 +498,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
    o  If DNSSD SRP is supported (that is, if stateful authoritative
       service is present), then an SRV record must be published, along
+
+
+
+Lemon, et al.            Expires April 26, 2019                 [Page 9]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
+
       with a list of available registration zones containing exactly one
       entry, for the homenet domain ([I-D.sctl-service-registration]
       section 2).
@@ -496,15 +527,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    Discovery Proxies.  Although these proxies generally do caching, no
    long-lived state is kept by them.  DNSSD Discovery Proxies running on
    HNRs must support DNS Stateful Operations and DNS Push.
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019                [Page 9]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
 
 5.5.  Authoritative name service for the ULA reverse mapping domain
 
@@ -532,6 +554,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    The RFC1918 reverse mapping zone contains the entire address space of
    the RFC1918 prefix that is in use on the homenet.  Section 3 of
    RFC1918 defines three prefixes that may be used.  The homenet will
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 10]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
+
    use all of one of these three prefixes.  Of these, the 172.16.0.0
    prefix is subdivided on a 12-bit boundary, and therefore must be
    represented as 16 separate zones.  The 10.0.0.0/8 and 192.168.0.0/16
@@ -551,16 +581,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    each address is published in its respective zone.  Because the zone
    172.in-addr.arpa is not available to be served locally, its locally
    served subdomains are simply served individually with no delegation.
-
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 10]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
 
 6.  Resolution
 
@@ -590,6 +610,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    5.  A DNS routing proxy.  Hereafter we refer to this as the DNS
        proxy.
 
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 11]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
+
    The reason that these are described as layers is that it's quite
    possible that all of the DNS services on the homenet might be
    provided by a single service listening on port 53; how the request is
@@ -603,23 +631,22 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
    The routing works as follows.  When a request is received (opcode=0,
    Q/R=0), the DNS proxy looks at the owner name in the question part of
-   the message.  * If the name is a subdomain of the homenet domain, the
-   query is local.  * If the name is a subdomain of a locally-valid ULA
-   reverse mapping domain, the query is local.  * If the name is a
-   subdomain of a locally valid RFC1918 reverse mapping zone, the query
-   is local.  * If the name is a subdomain of any locally-served zone,
-   as defined in Locally Served DNS Zones [localzones], but is not
+   the message.
 
+   o  If the name is a subdomain of the homenet domain, the query is
+      local.
 
+   o  If the name is a subdomain of a locally-valid ULA reverse mapping
+      domain, the query is local.
 
+   o  If the name is a subdomain of a locally valid RFC1918 reverse
+      mapping zone, the query is local.
 
-Lemon, et al.            Expires January 3, 2019               [Page 11]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+   o  If the name is a subdomain of any locally-served zone, as defined
+      in Locally Served DNS Zones [localzones], but is not otherwise
+      identified as local, the response is NXDOMAIN.
 
-
-   otherwise identified as local, the response is NXDOMAIN.  *
-   Otherwise, the query is not local.
+   o  Otherwise, the query is not local.
 
    Local queries are further divided.  If the query is for a link
    subdomain, the DNS proxy consults the table that maps per-link
@@ -638,6 +665,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    table of authoritative servers generated by HNCP and forwards the
    request to one of these servers.  Queries for the reverse mapping
    zones are handled the same way.
+
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 12]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
 
    Otherwise, the query is examined to see if it contains an EDNS(0)
    Provisioning Domain option.  If not, it round-robined across the
@@ -665,15 +700,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    across the set of resolvers provided by that ISP.  If the query is to
    be attempted at every ISP, then that is accomplished by round-
    robining in such a way that each ISP is tried in succession, rather
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 12]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    than all the resolvers at one ISP, and then all the resolvers at the
    next ISP, and so on.
 
@@ -691,6 +717,18 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    homenet, but can't be satisfied by the HNR that received it, a DNS
    Stateful operation is started with the HNR that is responsible for
    it.
+
+
+
+
+
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 13]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
 
 6.4.  Multicast DNS
 
@@ -720,16 +758,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    domain will only be used with source addresses for prefixes that are
    in that provisioning domain.
 
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 13]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
 7.  Publication
 
    Names are published either using Multicast DNS Service Discovery
@@ -750,6 +778,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    Support for SRP provides several advantages over DNSSD Discovery
    Proxy.  First, DNSSD SRP provides a secure way of claiming service
    names.  Second, a claimed name is valid for the entire network
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 14]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
+
    covered by the SRP service, not just an individual link, as is the
    case with mDNS.  Third, SRP does not use multicast, and is therefore
    more reliable on links with constrained multicast support
@@ -776,16 +812,7 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    The host first determines the ULA prefix.  If there is more than one
    ULA prefix active, the ULA prefix with the longest preferred lifetime
    is used.  A ULA prefix can be identified because it matches the
-   prefix FC00::/7 ([RFC4193] section 3.1).  The actual prefix is then
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 14]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
+   prefix fc00::/7 ([RFC4193] section 3.1).  The actual prefix is then
    the first 48 bits of the advertised prefix or the IP address in that
    prefix.
 
@@ -804,6 +831,16 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    succession; if none of the addresses is reachable, the update fails,
    and may be retried after a reasonable period (on the order of an
    hour) has elapsed.
+
+
+
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 15]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
 
 7.2.2.  Adding RFC1918 reverse mappings
 
@@ -833,15 +870,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    (DHCPv4) or Domain Search List (DHCPv4 or DHCPv6) option, the domain
    name provided is used to identify the PvD.  In the case of Domain
    Search List options, if there is more than one, the first one is
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 15]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    used.  For the ULA prefix, the homenet domain is used to identify the
    PvD.
 
@@ -862,6 +890,13 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
    1.  They can be manually configured by the user.  How this is done is
        out of scope for this document.
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 16]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
 
    2.  They can publish a delegation with the ISP, using a Homenet
        Delegation Registration Protocol Section 11.
@@ -890,14 +925,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    Each HNR on a homenet generates its own private/public key pair that
    can serve as a trust anchor.  These keys are shared using HNCP
    [RFC7788].  HNRs MUST NOT use pre-installed keys: each HNR MUST
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 16]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    generate its own key.  The HNR responsible for authoritative
    Discovery Proxy service on a particular link signs the zone for that
    link; delegations from the homenet domain zone to each per-link
@@ -919,6 +946,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
    If stateful authoritative service is being provided, the HNR that is
    acting as primary signs the zone, and all the secondaries serve
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 17]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
+
    copies acquired using zone transfers.  If the HNR that is primary
    goes away, then a secondary becomes primary and signs the zone before
    beginning to provide service.  Again, since all of the HNR's public
@@ -945,15 +980,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    Delegation is used.  If it is not present, or if it contains more
    than one domain name, HDeRP is not supported by the ISP.
 
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 17]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    Once the ISP domain has been discovered, the HNR looks for an SRV
    record owned by the name _homenet-derp._tcp under the ISP domain.  If
    this is not present, HDeRP is not supported.  If the SRV record is
@@ -976,6 +1002,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
    The HDeRP server validates the update by checking the SIG(0)
    signature of the update against the first key in the DS RRset.  If
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 18]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
+
    the update is successfully validated, then the server generates a
    domain name and sends a reply back to the HNR on the same TCP
    connection, including the NOERROR (0) RCODE, and including in the
@@ -1000,16 +1034,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    performed on the homenet by devices that are not directly connected
    to a link that is part of the homenet.
 
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 18]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
 13.  Expected Host Behavior
 
    It is expected that hosts will fall into one of two categories: hosts
@@ -1031,6 +1055,16 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    require management.  That said, a great deal of debugging and
    management can be done simply using the DNS Service Discovery
    protocol.
+
+
+
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 19]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
 
 15.  Privacy Considerations
 
@@ -1054,50 +1088,51 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
 17.  IANA considerations
 
-   IANA is requested to add the following names to the Service Name and
-   Transport Protocol Number registry:
+17.1.  Homenet Reverse Registration Protocol
+
+   IANA is requested to add a new entry to the Service Names and Port
+   Numbers registry for homenet-rrp with a transport type of tcp.  No
+   port number is to be assigned.  The reference should be to this
+   document, and the Assignee and Contact information should reference
+   the authors of this document.  The Description should be as follows:
+
+   Availability of Homenet Reverse Registration Protocol service for a
+   given domain is advertised using an SRV record with an owner name of
+   "_homenet-rrp._tcp.<domain>." in that domain, which gives the target
+   host and port where Homenet Reverse Registration service is provided
+   for the named domain.
+
+17.2.  Homenet Delegation Registration Protocol
+
+   IANA is requested to add a new entry to the Service Names and Port
+   Numbers registry for homenet-derp with a transport type of tcp.  No
+   port number is to be assigned.  The reference should be to this
+   document, and the Assignee and Contact information should reference
+   the authors of this document.  The Description should be as follows:
+
+   Availability of Homenet Delegation Registration Protocol service for
+   a given domain is advertised using an SRV record with an owner name
+   of "_homenet-derp._tcp.<domain>." in that domain, which gives the
 
 
 
 
-
-Lemon, et al.            Expires January 3, 2019               [Page 19]
+Lemon, et al.            Expires April 26, 2019                [Page 20]
 
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
+Internet-Draft           Homenet Naming/SD Arch             October 2018
 
 
-   +-------+-----+------+-------+-------+------+-------+------+--------+
-   | Servi | Por | Tran | Descr | Assig | Cont | Refer | Serv | Unauth |
-   | ce    | t N | spor | iptio | nee   | act  | ence  | ice  | orized |
-   | Name  | umb | t Pr | n     |       |      |       | Code |        |
-   |       | er  | otoc |       |       |      |       |      |        |
-   |       |     | ol   |       |       |      |       |      |        |
-   +-------+-----+------+-------+-------+------+-------+------+--------+
-   | homen |     | tcp  | Homen |       |      | This  |      |        |
-   | et-   |     |      | et Re |       |      | Docum |      |        |
-   | rrp   |     |      | verse |       |      | ent   |      |        |
-   |       |     |      | Regis |       |      |       |      |        |
-   |       |     |      | trati |       |      |       |      |        |
-   |       |     |      | on Pr |       |      |       |      |        |
-   |       |     |      | otoco |       |      |       |      |        |
-   |       |     |      | l     |       |      |       |      |        |
-   | homen |     | tcp  | Homen |       |      | This  |      |        |
-   | et-   |     |      | et Re |       |      | Docum |      |        |
-   | rrp   |     |      | verse |       |      | ent   |      |        |
-   |       |     |      | Regis |       |      |       |      |        |
-   |       |     |      | trati |       |      |       |      |        |
-   |       |     |      | on Pr |       |      |       |      |        |
-   |       |     |      | otoco |       |      |       |      |        |
-   |       |     |      | l     |       |      |       |      |        |
-   | homen |     | tcp  | Homen |       |      | This  |      |        |
-   | et-   |     |      | et De |       |      | Docum |      |        |
-   | derp  |     |      | legat |       |      | ent   |      |        |
-   |       |     |      | ion R |       |      |       |      |        |
-   |       |     |      | egist |       |      |       |      |        |
-   |       |     |      | ratio |       |      |       |      |        |
-   |       |     |      | n Pro |       |      |       |      |        |
-   |       |     |      | tcol  |       |      |       |      |        |
-   +-------+-----+------+-------+-------+------+-------+------+--------+
+   target host and port where Homenet Delegation Registration service is
+   provided for the named domain.
+
+17.3.  Unique Local Address Reserved Documentation Prefix
+
+   IANA is requested to add an entry to the IPv6 Special-Purpose Address
+   Registry for the prefix fc00:2001:db8::/48.  The Name shall be
+   "Unique Local Address Documentation Prefix."  The reference RFC will
+   be this document, once published.  The date will be the date the
+   entry was added.  All other fields will be the same as for the
+   Documentation prefix, 2001:db8::/32.
 
 18.  References
 
@@ -1113,14 +1148,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
               Cheshire, S., "Discovery Proxy for Multicast DNS-Based
               Service Discovery", draft-ietf-dnssd-hybrid-08 (work in
               progress), March 2018.
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 20]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
 
    [I-D.ietf-dnssd-push]
               Pusateri, T. and S. Cheshire, "DNS Push Notifications",
@@ -1142,6 +1169,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
               Internet Assigned Numbers Authority, "Locally-Served DNS
               Zones", n.d., <https://www.iana.org/assignments/
               locally-served-dns-zones/locally-served-dns-zones.xhtml>.
+
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 21]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
 
    [RFC1034]  Mockapetris, P., "Domain names - concepts and facilities",
               STD 13, RFC 1034, DOI 10.17487/RFC1034, November 1987,
@@ -1170,14 +1205,6 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
               Addresses", RFC 4193, DOI 10.17487/RFC4193, October 2005,
               <https://www.rfc-editor.org/info/rfc4193>.
 
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 21]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
-
-
    [RFC6762]  Cheshire, S. and M. Krochmal, "Multicast DNS", RFC 6762,
               DOI 10.17487/RFC6762, February 2013,
               <https://www.rfc-editor.org/info/rfc6762>.
@@ -1198,6 +1225,14 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
    [RFC7788]  Stenberg, M., Barth, S., and P. Pfister, "Home Networking
               Control Protocol", RFC 7788, DOI 10.17487/RFC7788, April
               2016, <https://www.rfc-editor.org/info/rfc7788>.
+
+
+
+
+Lemon, et al.            Expires April 26, 2019                [Page 22]
+
+Internet-Draft           Homenet Naming/SD Arch             October 2018
+
 
    [RFC8375]  Pfister, P. and T. Lemon, "Special-Use Domain
               'home.arpa.'", RFC 8375, DOI 10.17487/RFC8375, May 2018,
@@ -1220,18 +1255,6 @@ Authors' Addresses
    United States of America
 
    Email: mellon@fugue.com
-
-
-
-
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 22]
-
-Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
 
    Daniel Migault
@@ -1262,27 +1285,4 @@ Internet-Draft        Simple Homenet Naming/SD Arch            July 2018
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Lemon, et al.            Expires January 3, 2019               [Page 23]
+Lemon, et al.            Expires April 26, 2019                [Page 23]
