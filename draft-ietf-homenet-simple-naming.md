@@ -8,9 +8,9 @@ pi:
   toc: 'yes'
   compact: 'yes'
   symrefs: 'yes'
-title: Simple Homenet Naming and Service Discovery Architecture
-abbrev: Simple Homenet Naming/SD Arch
-date: 2018-07-02
+title: Homenet Naming and Service Discovery Architecture
+abbrev: Homenet Naming/SD Arch
+date: 2018-10-23
 author:
 - ins: T. Lemon
   name: Ted Lemon
@@ -158,16 +158,33 @@ operator have to happen automatically. This has implications for trust establish
 is no operator controlling what services are published locally, some other mechanism is required
 for basic trust establishment.
 
+### Multiple Provisioning Domains
+
 Additionally, whereas in a managed LAN with multiple links to the Internet, the network operator
 can configure the network so that multihoming is handled seamlessly, in a homenet, multihoming
 must be handled using multiple provisioning domains {{RFC7556}}.
 
-This is an issue that needs to be addressed in the naming architecture because Content Delivery
-Networks (CDNs) often use the DNS as a way to encourage hosts to use nearby content servers
-({{RFC7336}} Section 2.1.1).  This information is only valid in the context of a particular ISP;
-using the a DNS response from one ISP to contact a server through another ISP can result in poor
-performance or even failure to access the referenced resource.
+When a host on a homenet connects to a host outside the homenet, and the homenet is multihomed,
+the source address that the host uses for connecting determines which upstream ISP connection is
+used.  In principle, this is not a problem, because the Internet is a fully connected network,
+so any host that is on the Internet can be reached by any host on the Internet, regardless of
+how that host connects to the Internet.
 
+Unfortunately in practice this is not always the case.  Some ISPs provide special services to
+their end users that are only accessible when connected through the ISP.  When such a service is
+discovered using that ISP's name server, a response will be provided that will only work if the
+host connects using a prefix provided by that ISP.  If another ISP's prefix is used, the
+connection will fail.
+
+In the case of content delivery networks (CDNs), using the name service of one ISP and then
+connecting through a second ISP may seem to work, but may provide very poor service.
+
+In order to address this problem, the homenet naming architecture takes two approaches.  First,
+for hosts that do not support provisioning domain separation, we make sure that all ISP name
+servers are consulted in such a way that Happy Eyeballs will tend to work.  Second, for hosts
+that do support provisioning domain separation, we provide information to the hosts to identify
+provisioning domains, and we provide a mechanism that hosts can use to indicate which
+provisioning domain to use for a particular DNS query.
 
 ## Homenet-specific considerations
 
@@ -263,7 +280,7 @@ reverse zone for the subset of the ULA prefix that is being advertised on that l
 service on the homenet that supports IPv6 is expected to be reachable at an address that is
 configured using the ULA prefix. Therefore there is no need for any IPv6 reverse zone to be
 populated other than the ULA zone.  So for example if the homenet's ULA prefix is
-fd00:2001:db8::/48, then the reverse domain name for the homenet would end in
+fc00:2001:db8::/48, then the reverse domain name for the homenet would end in
 '8.b.d.0.1.0.0.2.0.0.d.f.ip6.arpa'.
 
 # Authority
@@ -335,11 +352,14 @@ Some contents are required for the homenet domain, whether it is stateful or sta
 
 * Every link on the homenet has a name that is a subdomain of the homenet domain.  The zone
   associated with the homenet domain contains a delegation for each of these subdomains.
+
 * In order for DNSSD service discovery to work, a default browsing domain must be published.
   The default browsing domain is simply the homenet domain.
+
 * If DNSSD SRP is supported (that is, if stateful authoritative service is present), then an SRV
   record must be published, along with a list of available registration zones containing exactly
   one entry, for the homenet domain ({{I-D.sctl-service-registration}} section 2).
+
 * Also if DNSSD SRP is supported, then one or more A and/or AAAA records must be published under
   the name that the SRV record points to, which should be a single label subdomain of the
   homenet domain.
@@ -425,11 +445,16 @@ server.
 
 The routing works as follows.  When a request is received (opcode=0, Q/R=0), the DNS proxy looks
 at the owner name in the question part of the message.
+
 * If the name is a subdomain of the homenet domain, the query is local.
+
 * If the name is a subdomain of a locally-valid ULA reverse mapping domain, the query is local.
+
 * If the name is a subdomain of a locally valid RFC1918 reverse mapping zone, the query is local.
+
 * If the name is a subdomain of any locally-served zone, as defined in Locally Served DNS
   Zones {{localzones}}, but is not otherwise identified as local, the response is NXDOMAIN.
+
 * Otherwise, the query is not local.
 
 Local queries are further divided.  If the query is for a link subdomain, the DNS proxy consults
@@ -540,7 +565,7 @@ mappings to the ULA reverse mapping domain and to the RFC1918 reverse mapping do
 
 The host first determines the ULA prefix.  If there is more than one ULA prefix active, the ULA
 prefix with the longest preferred lifetime is used.   A ULA prefix can be identified because it
-matches the prefix FC00::/7 ({{RFC4193}} section 3.1).   The actual prefix is then the first
+matches the prefix fc00::/7 ({{RFC4193}} section 3.1).   The actual prefix is then the first
 48 bits of the advertised prefix or the IP address in that prefix.
 
 Because the ULA reverse mapping zone contains no delegations, all updates go to that one zone.
@@ -725,12 +750,35 @@ is published.
 
 # IANA considerations {#IANA}
 
-IANA is requested to add the following names to the Service Name and Transport Protocol Number registry:
+## Homenet Reverse Registration Protocol
 
-|Service Name|Port Number|Transport Protocol|Description|Assignee|Contact|Reference|Service Code|Unauthorized|
-|------------|-----------|------------------|-----------|--------|-------|---------|------------|------------|
-|homenet-rrp||tcp |Homenet Reverse Registration Protocol|||This Document|||
-|homenet-rrp||tcp |Homenet Reverse Registration Protocol|||This Document|||
-|homenet-derp||tcp|Homenet Delegation Registration Protcol|||This Document|||
+IANA is requested to add a new entry to the Service Names and Port Numbers registry for
+homenet-rrp with a transport type of tcp.  No port number is to be assigned.  The reference should
+be to this document, and the Assignee and Contact information should reference the authors of
+this document.  The Description should be as follows:
+
+Availability of Homenet Reverse Registration Protocol service for a given domain is advertised
+using an SRV record with an owner name of "_homenet-rrp._tcp.<domain>." in that domain, which
+gives the target host and port where Homenet Reverse Registration service is provided for the
+named domain.
+
+## Homenet Delegation Registration Protocol
+
+IANA is requested to add a new entry to the Service Names and Port Numbers registry for
+homenet-derp with a transport type of tcp.  No port number is to be assigned.  The reference
+should be to this document, and the Assignee and Contact information should reference the
+authors of this document.  The Description should be as follows:
+
+Availability of Homenet Delegation Registration Protocol service for a given domain is advertised
+using an SRV record with an owner name of "_homenet-derp._tcp.<domain>." in that domain, which
+gives the target host and port where Homenet Delegation Registration service is provided for the
+named domain.
+
+## Unique Local Address Reserved Documentation Prefix
+
+IANA is requested to add an entry to the IPv6 Special-Purpose Address Registry for the prefix
+fc00:2001:db8::/48.  The Name shall be "Unique Local Address Documentation Prefix."  The
+reference RFC will be this document, once published.  The date will be the date the entry was
+added.   All other fields will be the same as for the Documentation prefix, 2001:db8::/32.
 
 --- back
